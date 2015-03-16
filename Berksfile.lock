@@ -1,0 +1,12 @@
+DEPENDENCIES
+  bamboo
+    path: cookbooks/bamboo
+  jira
+    path: cookbooks/jira
+  stash
+    path: cookbooks/stash
+
+GRAPH
+  bamboo (0.1.0)
+  jira (0.1.0)
+  stash (0.1.0)
