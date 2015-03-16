@@ -8,5 +8,7 @@ DEPENDENCIES
 
 GRAPH
   bamboo (0.1.0)
+    java (>= 0.0.0)
+  java (1.31.0)
   jira (0.1.0)
   stash (0.1.0)

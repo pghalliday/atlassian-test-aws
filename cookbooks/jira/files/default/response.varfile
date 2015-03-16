@@ -1,0 +1,8 @@
+#install4j response file for JIRA 6.3.15
+#Mon Mar 16 21:43:52 UTC 2015
+executeLauncherAction$Boolean=true
+app.install.service$Boolean=true
+sys.confirmedUpdateInstallationString=false
+existingInstallationDir=/opt/JIRA
+sys.languageId=en
+sys.installationDir=/opt/atlassian/jira
