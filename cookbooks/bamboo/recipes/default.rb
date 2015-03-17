@@ -31,6 +31,7 @@ end
 directory install_dir do
   owner bamboo_user
   group bamboo_group
+  recursive true
 end
 
 bash 'unpack Bamboo' do
