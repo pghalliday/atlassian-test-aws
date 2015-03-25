@@ -1,0 +1,754 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "dnspghallidaynet": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneName": "pghalliday.net.",
+        "RecordSets": [
+          {
+            "Name": "pghalliday.net.",
+            "Type": "A",
+            "ResourceRecords": [
+
+            ],
+            "AliasTarget": {
+              "HostedZoneId": "Z3AQBSTGFYJSTF",
+              "DNSName": "s3-website-us-east-1.amazonaws.com"
+            }
+          }
+        ]
+      }
+    },
+    "vpc8a0859ef": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test"
+          }
+        ]
+      }
+    },
+    "subnetb5238b9e": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "AvailabilityZone": "us-east-1b",
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public subnet"
+          }
+        ]
+      }
+    },
+    "subnetbf21a1e6": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": "us-east-1d",
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public subnet"
+          }
+        ]
+      }
+    },
+    "igw803bade5": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+      }
+    },
+    "dopted648688": {
+      "Type": "AWS::EC2::DHCPOptions",
+      "Properties": {
+        "DomainName": "ec2.internal",
+        "DomainNameServers": [
+          "AmazonProvidedDNS"
+        ]
+      }
+    },
+    "acl9ecb83fb": {
+      "Type": "AWS::EC2::NetworkAcl",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        }
+      }
+    },
+    "rtb03f0dd66": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        }
+      }
+    },
+    "rtb0df0dd68": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        }
+      }
+    },
+    "eip5219115": {
+      "Type": "AWS::EC2::EIP",
+      "DependsOn": [
+        "gw1"
+      ],
+      "Properties": {
+        "Domain": "vpc",
+        "InstanceId": {
+          "Ref": "instancei88f85b74"
+        }
+      }
+    },
+    "instancei10c96bec": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-jira"
+          }
+        ],
+        "Volumes": [
+          {
+            "Device": "/dev/sdf",
+            "VolumeId": {
+              "Ref": "volumevol60df5a27"
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.23",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantestinternal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instancei15cf6de9": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-confluence"
+          }
+        ],
+        "Volumes": [
+          {
+            "Device": "/dev/sdf",
+            "VolumeId": {
+              "Ref": "volumevol04df5a43"
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.144",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantestinternal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instancei56cb69aa": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-crowd"
+          }
+        ],
+        "Volumes": [
+          {
+            "Device": "/dev/sdf",
+            "VolumeId": {
+              "Ref": "volumevol16dc5951"
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.196",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantestinternal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instanceie4d07218": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-bamboo"
+          }
+        ],
+        "Volumes": [
+          {
+            "Device": "/dev/sdf",
+            "VolumeId": {
+              "Ref": "volumevol25de5b62"
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.112",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantestinternal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instanceif1d3710d": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-stash"
+          }
+        ],
+        "Volumes": [
+          {
+            "Device": "/dev/sdf",
+            "VolumeId": {
+              "Ref": "volumevolbadf5afd"
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.167",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantestinternal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instancei88f85b74": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": "atlassian-test",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "atlassian-test-front-end"
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnetbf21a1e6"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.89",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sgatlassiantest"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "volumevol16dc5951": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "Size": "20",
+        "VolumeType": "gp2"
+      }
+    },
+    "volumevol60df5a27": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "Size": "20",
+        "VolumeType": "gp2"
+      }
+    },
+    "volumevol04df5a43": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "Size": "20",
+        "VolumeType": "gp2"
+      }
+    },
+    "volumevolbadf5afd": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "Size": "20",
+        "VolumeType": "gp2"
+      }
+    },
+    "volumevol25de5b62": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "Size": "20",
+        "VolumeType": "gp2"
+      }
+    },
+    "rdsatlassiantest": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AutoMinorVersionUpgrade": "true",
+        "DBInstanceClass": "db.t2.micro",
+        "Iops": "1000",
+        "Port": "5432",
+        "AllocatedStorage": "100",
+        "BackupRetentionPeriod": "7",
+        "DBName": "MyDatabase",
+        "Engine": "postgres",
+        "EngineVersion": "9.4.1",
+        "LicenseModel": "postgresql-license",
+        "MasterUsername": "atlassian",
+        "MasterUserPassword": "MyPassword",
+        "PreferredBackupWindow": "05:55-06:25",
+        "PreferredMaintenanceWindow": "sat:03:39-sat:04:09",
+        "MultiAZ": "true",
+        "VPCSecurityGroups": [
+          {
+            "Ref": "sgatlassiantestdb"
+          }
+        ],
+        "DBSubnetGroupName": {
+          "Ref": "dbsubnetatlassiantest"
+        },
+        "Tags": [
+          {
+            "Key": "workload-type",
+            "Value": "production"
+          }
+        ]
+      }
+    },
+    "s3blogpghallidaynet": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+      }
+    },
+    "s3pghallidaynet": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+      }
+    },
+    "s3wwwpghallidaynet": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+      }
+    },
+    "topicNotifyMe": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "NotifyMe",
+        "Subscription": [
+          {
+            "Endpoint": "pghalliday@gmail.com",
+            "Protocol": "email"
+          }
+        ]
+      }
+    },
+    "dbsubnetatlassiantest": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "DB subnet group",
+        "SubnetIds": [
+          {
+            "Ref": "subnetb5238b9e"
+          },
+          {
+            "Ref": "subnetbf21a1e6"
+          }
+        ]
+      }
+    },
+    "sgatlassiantest": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "HTTP/S and SSH access",
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "sgatlassiantestinternal": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "all ports open to VPC instances",
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+            "CidrIp": "10.0.0.0/16"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "sgatlassiantestdb": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "securit group for db instances",
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "5432",
+            "ToPort": "5432",
+            "CidrIp": "10.0.0.0/16"
+          }
+        ]
+      }
+    },
+    "acl1": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Egress": true,
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl9ecb83fb"
+        }
+      }
+    },
+    "acl2": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl9ecb83fb"
+        }
+      }
+    },
+    "subnetacl1": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "acl9ecb83fb"
+        },
+        "SubnetId": {
+          "Ref": "subnetbf21a1e6"
+        }
+      }
+    },
+    "subnetacl2": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "acl9ecb83fb"
+        },
+        "SubnetId": {
+          "Ref": "subnetb5238b9e"
+        }
+      }
+    },
+    "gw1": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "InternetGatewayId": {
+          "Ref": "igw803bade5"
+        }
+      }
+    },
+    "subnetroute2": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "rtb0df0dd68"
+        },
+        "SubnetId": {
+          "Ref": "subnetbf21a1e6"
+        }
+      }
+    },
+    "subnetroute3": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "rtb0df0dd68"
+        },
+        "SubnetId": {
+          "Ref": "subnetb5238b9e"
+        }
+      }
+    },
+    "route1": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "rtb0df0dd68"
+        },
+        "GatewayId": {
+          "Ref": "igw803bade5"
+        }
+      },
+      "DependsOn": "gw1"
+    },
+    "dchpassoc1": {
+      "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc8a0859ef"
+        },
+        "DhcpOptionsId": {
+          "Ref": "dopted648688"
+        }
+      }
+    },
+    "ingress1": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantest"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ingress2": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantest"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "80",
+        "ToPort": "80",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ingress3": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantest"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "443",
+        "ToPort": "443",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ingress4": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantestinternal"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "10.0.0.0/16"
+      }
+    },
+    "ingress5": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantestdb"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "5432",
+        "ToPort": "5432",
+        "CidrIp": "10.0.0.0/16"
+      }
+    },
+    "egress1": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantest"
+        },
+        "IpProtocol": "-1",
+        "CidrIP": "0.0.0.0/0"
+      }
+    },
+    "egress2": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgatlassiantestinternal"
+        },
+        "IpProtocol": "-1",
+        "CidrIP": "0.0.0.0/0"
+      }
+    }
+  },
+  "Description": "Test Atlassian deployment including:\r\n\r\nNginx front end\r\nCrowd\r\nJIRA\r\nConfluence\r\nStash\r\nBamboo\r\nPostgres RDS DB"
+}
