@@ -58,7 +58,7 @@
       "Properties": {
         "VpcId": { "Ref": "vpc"},
         "CidrBlock": "10.0.0.0/24",
-        "AvailabilityZone": "us-east-1a"
+        "AvailabilityZone": "us-east-1b"
       }
     },
 
@@ -99,10 +99,10 @@
       "Type": "AWS::EC2::Instance",
       "DependsOn": "vpcGatewayAttachment",
       "Properties": {
-        "AvailabilityZone": "us-east-1a",
+        "AvailabilityZone": "us-east-1b",
         "ImageId": "ami-9a562df2",
         "InstanceType": "t2.micro",
-        "KeyName": "atalassian-test",
+        "KeyName": "atlassian-test",
         "PrivateIpAddress": "10.0.0.100",
         "SecurityGroupIds": [
           { "Ref": "nginxFrontEndSecurityGroup" }
