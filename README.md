@@ -2,6 +2,7 @@
 
 ## Prerequisites
 
+- Create an `atlassian.pghalliday.net` S3 bucket to hold the template and cookbooks
 - Create an `atlassian-test` IAM user with the following user policy
 
 ```
@@ -37,12 +38,32 @@
             "Resource": [
                 "*"
             ]
+        },
+        {
+            "Sid": "Stmt1427745716000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::atlassian.pghalliday.net"
+            ]
+        },
+        {
+            "Sid": "Stmt1427745717000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::atlassian.pghalliday.net/*"
+            ]
         }
     ]
 }
 ```
 
-- TODO: add parameters for hosted zone and document hosted zone prerequisite
+- Add a `pghalliday.net` Route53 hosted zone
 - [AWS CLI tools](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 - Configure an AWS profile with the keys from the `atlassian-test` user created above and set the default region to `us-east-1` and the default output format to `text`
 
@@ -51,6 +72,12 @@ aws configure --profile atlassian-test
 ```
 
 ## Usage
+
+To sync the template and cookbooks to the S3 bucket
+
+```
+./sync-s3.sh
+```
 
 To create the stack, from the project directory
 

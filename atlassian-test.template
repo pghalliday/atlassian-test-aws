@@ -123,7 +123,7 @@
     "atlassianRoute53RecordSet": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "HostedZoneId": "Z14RRFH24YUR54",
+        "HostedZoneName": "pghalliday.net.",
         "Name": "atlassian.pghalliday.net.",
         "Type": "A",
         "TTL": "900",
