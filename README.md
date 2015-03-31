@@ -58,6 +58,16 @@
             "Resource": [
                 "arn:aws:s3:::atlassian.pghalliday.net/*"
             ]
+        },
+        {
+            "Sid": "Stmt1427802739000",
+            "Effect": "Allow",
+            "Action": [
+                "iam:*"
+            ],
+            "Resource": [
+                "*"
+            ]
         }
     ]
 }
@@ -82,13 +92,13 @@ To sync the template and cookbooks to the S3 bucket
 To create the stack, from the project directory
 
 ```
-aws cloudformation create-stack --profile atlassian-test --stack-name atlassian-test --template-url https://s3.amazonaws.com/atlassian.pghalliday.net/atlassian-test.template
+aws cloudformation create-stack --profile atlassian-test --capabilities CAPABILITY_IAM --stack-name atlassian-test --template-url https://s3.amazonaws.com/atlassian.pghalliday.net/atlassian-test.template
 ```
 
 To update the stack, from the project directory
 
 ```
-aws cloudformation update-stack --profile atlassian-test --stack-name atlassian-test --template-url https://s3.amazonaws.com/atlassian.pghalliday.net/atlassian-test.template
+aws cloudformation update-stack --profile atlassian-test ---capabilities CAPABILITY_IAM -stack-name atlassian-test --template-url https://s3.amazonaws.com/atlassian.pghalliday.net/atlassian-test.template
 ```
 
 To delete the stack

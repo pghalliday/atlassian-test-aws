@@ -18,7 +18,7 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
-        "EnableDnsSupport": false,
+        "EnableDnsSupport": true,
         "EnableDnsHostnames": false,
         "InstanceTenancy": "default"
       }
@@ -69,6 +69,42 @@
         "SubnetId": { "Ref": "subnet1" }
       }
     },
+
+    "iamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "ec2.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "atlassian-test",
+          "PolicyDocument": {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::atlassian.pghalliday.net/*"
+            }]
+          }
+        }]
+      }
+    },
+
+    "iamInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [ { "Ref": "iamRole" } ]
+      }
+    },
     
     "nginxFrontEndSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -98,6 +134,42 @@
     "nginxFrontEnd": {
       "Type": "AWS::EC2::Instance",
       "DependsOn": "vpcGatewayAttachment",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {
+              "/tmp/NginxFrontEnd.tar.gz": {
+                "source": "https://s3.amazonaws.com/atlassian.pghalliday.net/NginxFrontEnd.tar.gz",
+                "Authentication": "s3",
+                "mode": "000644",
+                "owner": "root",
+                "group": "root"
+              }
+            },
+            "commands": {
+              "001_InstallChef": {
+                "command": "wget -O - https://www.opscode.com/chef/install.sh | sh",
+                "test": "! which chef-client"
+              },
+              "002_UnpackCookbooks": {
+                "command": "rm -rf cookbooks && tar zxf NginxFrontEnd.tar.gz",
+                "cwd": "/tmp"
+              },
+              "003_RunChef": {
+                "command": "chef-client -z -r NginxFrontEnd",
+                "cwd": "/tmp"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Authentication": {
+          "s3": {
+            "type": "S3",
+            "buckets": [ "atlassian.pghalliday.net" ],
+            "roleName": { "Ref": "iamRole" }
+          }
+        }
+      },
       "Properties": {
         "AvailabilityZone": "us-east-1b",
         "ImageId": "ami-9a562df2",
@@ -107,7 +179,20 @@
         "SecurityGroupIds": [
           { "Ref": "nginxFrontEndSecurityGroup" }
         ],
-        "SubnetId": { "Ref": "subnet1" }
+        "SubnetId": { "Ref": "subnet1" },
+        "IamInstanceProfile": { "Ref": "iamInstanceProfile" },
+        "UserData": { "Fn::Base64": { "Fn::Join": ["", [
+          "#!/bin/bash -ex", "\n",
+          "apt-get update", "\n",
+          "apt-get -y install python-setuptools", "\n",
+          "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz", "\n",
+          "mkdir -p /root/aws-cfn-bootstrap-latest", "\n",
+          "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest", "\n",
+          "easy_install /root/aws-cfn-bootstrap-latest/", "\n",
+          "/usr/local/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
+          "  -r nginxFrontEnd",
+          "  --region ", { "Ref": "AWS::Region" }, "\n"
+        ]]}}
       }
     },
 

@@ -1,0 +1,6 @@
+DEPENDENCIES
+  NginxFrontEnd
+    path: cookbooks/NginxFrontEnd
+
+GRAPH
+  NginxFrontEnd (0.1.0)
