@@ -78,7 +78,7 @@
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": { "Ref": "hostedZoneName" },
-        "Name": { "Fn::Join": [ "", [ "atlassian", { "Ref": "hostedZoneName" } ] ] },
+        "Name": { "Fn::Join": [ "", [ "atlassian.", { "Ref": "hostedZoneName" } ] ] },
         "Type": "A",
         "TTL": "900",
         "ResourceRecords": [
