@@ -8,7 +8,7 @@ s3_dir=$DIR/s3
 rm -rf $s3_dir
 mkdir -p $s3_dir
 
-cp atlassian-test.template $s3_dir
+cp atlassian-test.json $s3_dir
 
 for dir in $instances_dir/*/
 do
