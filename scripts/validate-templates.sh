@@ -1,10 +1,8 @@
 #!/bin/bash -e
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+TEMPLATES_DIR=$1
 
-templates_dir=$DIR/../templates
-
-for template in $templates_dir/*
+for template in $TEMPLATES_DIR/*
 do
   echo "** Validating template: $template"
   echo

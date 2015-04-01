@@ -15,7 +15,7 @@ else
   fi
 
   source $DIR/parameters.sh
-  $DIR/scripts/sync-s3.sh $AT_BUCKET_NAME
+  $DIR/scripts/sync-s3.sh $AT_BUCKET_NAME $DIR/instances $DIR/templates $DIR/build
 
   aws cloudformation $COMMAND \
   --profile atlassian-test \

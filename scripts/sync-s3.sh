@@ -1,24 +1,24 @@
 #!/bin/bash -e
 
 BUCKET_NAME=$1
+INSTANCES_DIR=$2
+TEMPLATES_DIR=$3
+BUILD_DIR=$4
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-$DIR/validate-templates.sh
+$DIR/validate-templates.sh $TEMPLATES_DIR
 
-instances_dir=$DIR/../instances
-s3_dir=$DIR/../s3
+rm -rf $BUILD_DIR
+mkdir -p $BUILD_DIR/cookbooks
 
-rm -rf $s3_dir
-mkdir -p $s3_dir/cookbooks
+cp -r $TEMPLATES_DIR $BUILD_DIR
 
-cp -r templates $s3_dir
-
-for dir in $instances_dir/*/
+for dir in $INSTANCES_DIR/*/
 do
   cd $dir
   rm -f *.tar.gz
   berks package
-  mv cookbooks-*.tar.gz $s3_dir/cookbooks/$(basename $dir).tar.gz
+  mv cookbooks-*.tar.gz $BUILD_DIR/cookbooks/$(basename $dir).tar.gz
 done
 
-aws s3 sync --profile atlassian-test --delete $s3_dir s3://$BUCKET_NAME
+aws s3 sync --profile atlassian-test --delete $BUILD_DIR s3://$BUCKET_NAME
