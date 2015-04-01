@@ -67,7 +67,6 @@
 
     "elasticIp": {
       "Type": "AWS::EC2::EIP",
-      "DependsOn": "vpc",
       "Properties": {
         "InstanceId": { "Fn::GetAtt": [ "nginxFrontEnd", "Outputs.instanceId" ] },
         "Domain": "vpc"

@@ -3,6 +3,8 @@
 BUCKET_NAME=$1
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+$DIR/validate-templates.sh
+
 instances_dir=$DIR/instances
 s3_dir=$DIR/s3
 

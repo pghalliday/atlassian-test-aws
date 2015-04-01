@@ -84,88 +84,29 @@ aws configure --profile atlassian-test
 
 - Choose a first availability zone in your default region (eg. `us-east-1b`) - `$AT_AVAILABILITY_ZONE_1`
 
+- Copy `example.parameters.sh` to `parameters.sh` and set your parameters in there.
+
+```
+cp example.parameters.sh parameters.sh
+vim parameters.sh
+```
+
 ## Usage
 
-To validate the templates
+To create the stack (will validate the templates and upload everything to S3 first)
 
 ```
-./validate-templates.sh
+./aws.sh create
 ```
 
-To sync the template and cookbooks to the S3 bucket (substitute `$AT_BUCKET_NAME`)
+To update the stack (will validate the templates and upload everything to S3 first)
 
 ```
-./sync-s3.sh $AT_BUCKET_NAME
-```
-
-To create the stack, from the project directory (substitute `$AT_KEY_PAIR`, `$AT_BUCKET_NAME`, `$AT_HOSTED_ZONE` and `$AT_AVAILABILITY_ZONE_1`)
-
-```
-aws cloudformation create-stack \
---profile atlassian-test \
---stack-name atlassian-test \
---capabilities CAPABILITY_IAM \
---template-url https://s3.amazonaws.com/$AT_BUCKET_NAME/templates/all.json \
---parameters '[{
-  "ParameterKey": "keyName",
-  "ParameterValue": "'$AT_KEY_PAIR'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "bucketName",
-  "ParameterValue": "'$AT_BUCKET_NAME'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "hostedZoneName",
-  "ParameterValue": "'$AT_HOSTED_ZONE'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "availabilityZone1",
-  "ParameterValue": "'$AT_AVAILABILITY_ZONE_1'",
-  "UsePreviousValue": false
-}]'
-```
-
-To update the stack, from the project directory (substitute `$AT_KEY_PAIR`, `$AT_BUCKET_NAME`, `$AT_HOSTED_ZONE` and `$AT_AVAILABILITY_ZONE_1`)
-
-```
-aws cloudformation update-stack \
---profile atlassian-test \
---stack-name atlassian-test \
---capabilities CAPABILITY_IAM \
---template-url https://s3.amazonaws.com/$AT_BUCKET_NAME/templates/all.json \
---parameters '[{
-  "ParameterKey": "keyName",
-  "ParameterValue": "'$AT_KEY_PAIR'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "bucketName",
-  "ParameterValue": "'$AT_BUCKET_NAME'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "hostedZoneName",
-  "ParameterValue": "'$AT_HOSTED_ZONE'",
-  "UsePreviousValue": false
-}, {
-  "ParameterKey": "availabilityZone1",
-  "ParameterValue": "'$AT_AVAILABILITY_ZONE_1'",
-  "UsePreviousValue": false
-}]'
+./aws.sh
 ```
 
 To delete the stack
 
 ```
-aws cloudformation delete-stack \
---profile atlassian-test \
---stack-name atlassian-test
-```
-
-## Hint
-
-Copy `example.parameters.sh` to `parameters.sh` and set your parameters in there. Then you can source `parameters.sh` and run the above commands without substitution.
-
-```
-cp example.parameters.sh parameters.sh
-vim parameters.sh
-source ./parameters.sh
+./aws.sh delete
 ```
