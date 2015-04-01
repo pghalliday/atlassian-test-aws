@@ -2,7 +2,7 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-templates_dir=$DIR/templates
+templates_dir=$DIR/../templates
 
 for template in $templates_dir/*
 do

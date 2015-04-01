@@ -5,8 +5,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 $DIR/validate-templates.sh
 
-instances_dir=$DIR/instances
-s3_dir=$DIR/s3
+instances_dir=$DIR/../instances
+s3_dir=$DIR/../s3
 
 rm -rf $s3_dir
 mkdir -p $s3_dir/cookbooks
