@@ -1,0 +1,66 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "IAM instance profile allowing gets from an S3 bucket",
+
+  "Parameters": {
+    "bucketName": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "ec2.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "S3ReadOnlyAccess",
+          "PolicyDocument": {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "bucketName" }, "/*" ] ] }
+            }]
+          }
+        }]
+      }
+    },
+
+    "instanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [ { "Ref": "role" } ]
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "iamInstanceProfile": {
+      "Value": { "Ref": "instanceProfile" }
+    },
+    "roleName": {
+      "Value": { "Ref": "role" }
+    }
+  }
+}

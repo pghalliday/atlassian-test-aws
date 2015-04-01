@@ -1,0 +1,94 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Test Atlassian deployment including:\r\n\r\nNginx front end\r\nCrowd\r\nJIRA\r\nConfluence\r\nStash\r\nBamboo\r\nPostgres RDS DB",
+
+  "Parameters": {
+    "bucketName": {
+      "Type": "String"
+    },
+    "availabilityZone1": {
+      "Type": "String"
+    },
+    "keyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "hostedZoneName": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "vpc": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/vpc.json" ] ] },
+        "Parameters": {
+          "cidrBlock": "10.0.0.0/16",
+          "subnet1CidrBlock": "10.0.0.0/24",
+          "subnet1AvailabilityZone": { "Ref": "availabilityZone1" }
+        }
+      }
+    },
+
+    "instanceProfile": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/instanceProfile.json" ] ] },
+        "Parameters": {
+          "bucketName": { "Ref": "bucketName" }
+        }
+      }
+    },
+
+    "nginxFrontEnd": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginxFrontEnd.json" ] ] },
+        "Parameters": {
+          "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
+          "bucketName": { "Ref": "bucketName" },
+          "roleName": { "Fn::GetAtt": [ "instanceProfile", "Outputs.roleName" ] },
+          "iamInstanceProfile": { "Fn::GetAtt": [ "instanceProfile", "Outputs.iamInstanceProfile" ] },
+          "keyName": { "Ref": "keyName" },
+          "availabilityZone": { "Ref": "availabilityZone1" },
+          "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
+          "privateIpAddress": "10.0.0.100"
+        }
+      }
+    },
+
+    "elasticIp": {
+      "Type": "AWS::EC2::EIP",
+      "DependsOn": "vpc",
+      "Properties": {
+        "InstanceId": { "Fn::GetAtt": [ "nginxFrontEnd", "Outputs.instanceId" ] },
+        "Domain": "vpc"
+      }
+    },
+
+    "atlassianRoute53RecordSet": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneName": { "Ref": "hostedZoneName" },
+        "Name": { "Fn::Join": [ "", [ "atlassian", { "Ref": "hostedZoneName" } ] ] },
+        "Type": "A",
+        "TTL": "900",
+        "ResourceRecords": [
+          { "Ref": "elasticIp" }
+        ]
+      }
+    }
+
+  },
+
+  "Outputs": {
+  }
+}

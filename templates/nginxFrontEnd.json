@@ -1,0 +1,137 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Nginx front end instance",
+
+  "Parameters": {
+    "vpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "bucketName": {
+      "Type": "String"
+    },
+    "roleName": {
+      "Type": "String"
+    },
+    "iamInstanceProfile": {
+      "Type": "String"
+    },
+    "keyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "availabilityZone": {
+      "Type": "String"
+    },
+    "subnetId": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "privateIpAddress": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "nginxFrontEndSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "enable SSH and HTTP incoming and anything outgoing",
+        "VpcId": { "Ref": "vpcId" },
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "22",
+          "ToPort": "22",
+          "CidrIp": "0.0.0.0/0"
+        }, {
+          "IpProtocol": "tcp",
+          "FromPort": "80",
+          "ToPort": "80",
+          "CidrIp": "0.0.0.0/0"
+        }],
+        "SecurityGroupEgress": [{
+          "IpProtocol": "-1",
+          "FromPort": "0",
+          "ToPort": "65535",
+          "CidrIp": "0.0.0.0/0"
+        }]
+      }
+    },
+
+    "nginxFrontEnd": {
+      "Type": "AWS::EC2::Instance",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {
+              "/tmp/NginxFrontEnd.tar.gz": {
+                "source": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks/NginxFrontEnd.tar.gz" ] ] },
+                "Authentication": "s3",
+                "mode": "000644",
+                "owner": "root",
+                "group": "root"
+              }
+            },
+            "commands": {
+              "001_InstallChef": {
+                "command": "wget -O - https://www.opscode.com/chef/install.sh | sh",
+                "test": "! which chef-client"
+              },
+              "002_UnpackCookbooks": {
+                "command": "rm -rf cookbooks && tar zxf NginxFrontEnd.tar.gz",
+                "cwd": "/tmp"
+              },
+              "003_RunChef": {
+                "command": "chef-client -z -r NginxFrontEnd",
+                "cwd": "/tmp"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Authentication": {
+          "s3": {
+            "type": "S3",
+            "buckets": [ { "Ref": "bucketName" } ],
+            "roleName": { "Ref": "roleName" }
+          }
+        }
+      },
+      "Properties": {
+        "AvailabilityZone": { "Ref": "availabilityZone" },
+        "ImageId": "ami-9a562df2",
+        "InstanceType": "t2.micro",
+        "KeyName": { "Ref": "keyName" },
+        "PrivateIpAddress": { "Ref": "privateIpAddress" },
+        "SecurityGroupIds": [
+          { "Ref": "nginxFrontEndSecurityGroup" }
+        ],
+        "SubnetId": { "Ref": "subnetId" },
+        "IamInstanceProfile": { "Ref": "iamInstanceProfile" },
+        "UserData": { "Fn::Base64": { "Fn::Join": ["", [
+          "#!/bin/bash -ex", "\n",
+          "apt-get update", "\n",
+          "apt-get -y install python-setuptools", "\n",
+          "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz", "\n",
+          "mkdir -p /root/aws-cfn-bootstrap-latest", "\n",
+          "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest", "\n",
+          "easy_install /root/aws-cfn-bootstrap-latest/", "\n",
+          "/usr/local/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
+          "  -r nginxFrontEnd",
+          "  --region ", { "Ref": "AWS::Region" }, "\n"
+        ]]}}
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "instanceId": {
+      "Value": { "Ref": "nginxFrontEnd" }
+    }
+  }
+}

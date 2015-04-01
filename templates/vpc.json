@@ -1,0 +1,92 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "VPC with one public subnet and DNS enabled with internal hostnames",
+
+  "Parameters": {
+    "cidrBlock": {
+      "Type": "String"
+    },
+    "subnet1CidrBlock": {
+      "Type": "String"
+    },
+    "subnet1AvailabilityZone": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "vpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": { "Ref": "cidrBlock" },
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "InstanceTenancy": "default"
+      }
+    },
+
+    "internetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+
+    "vpcGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "InternetGatewayId": { "Ref": "internetGateway" },
+        "VpcId": { "Ref": "vpc" }
+      }
+    },
+
+    "routeTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "vpc" }
+      }
+    },
+
+    "route": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "vpcGatewayAttachment",
+      "Properties": {
+        "RouteTableId": { "Ref": "routeTable" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": { "Ref": "internetGateway" }
+      }
+    },
+
+    "subnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "vpc"},
+        "CidrBlock": { "Ref": "subnet1CidrBlock" },
+        "AvailabilityZone": { "Ref": "subnet1AvailabilityZone" }
+      }
+    },
+
+    "subnet1RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": { "Ref": "routeTable" },
+        "SubnetId": { "Ref": "subnet1" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "vpcId": {
+      "Value": { "Ref": "vpc" }
+    },
+    "subnet1Id": {
+      "Value": { "Ref": "subnet1" }
+    }
+  }
+}
