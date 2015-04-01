@@ -76,7 +76,7 @@
 ```
 
 - Add a Route53 hosted zone - `$AT_HOSTED_ZONE`
-- Configure an AWS profile with the keys from the IAM user created above and set your default region (eg. `us-east-1`) and the default output format to `text`
+- Configure an AWS profile with the keys from the IAM user created above, setting your default region (eg. `us-east-1`) and the default output format to `text`
 
 ```
 aws configure --profile atlassian-test
