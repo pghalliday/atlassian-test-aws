@@ -80,7 +80,7 @@
           },
           "installEc2Tools": {
             "commands": {
-              "installEc2Tools": "apt-get install ec2-api-tools"
+              "installEc2Tools": "apt-get install -y ec2-api-tools"
             }
           },
           "assignIps": {
@@ -89,8 +89,9 @@
                 "content": { "Fn::Join": [ "", [
                   "#!/bin/bash -e", "\n",
                   "securityCredentials=`wget -q -O - http://169.254.169.254/latest/meta-data/iam/security-credentials/", { "Ref": "roleName" }, "`", "\n",
-                  "AWS_ACCESS_KEY=`echo $securityCredentials | sed -n 's/.*\"AccessKeyId\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
-                  "AWS_SECRET_KEY=`echo $securityCredentials | sed -n 's/.*\"SecretAccessKey\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
+                  "export AWS_ACCESS_KEY=`echo $securityCredentials | sed -n 's/.*\"AccessKeyId\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
+                  "export AWS_SECRET_KEY=`echo $securityCredentials | sed -n 's/.*\"SecretAccessKey\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
+                  "export AWS_DELEGATION_TOKEN=`echo $securityCredentials | sed -n 's/.*\"Token\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
                   "instanceid=`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`", "\n",
                   "ec2-associate-address ", { "Ref": "publicIpAddress" }, " -i $instanceid", "\n"
                 ]]},
