@@ -80,7 +80,7 @@
           },
           "installEc2Tools": {
             "commands": {
-              "installEc2Tools": "apt-get install -y ec2-api-tools"
+              "installEc2Tools": "apt-get -y install ec2-api-tools"
             }
           },
           "assignIps": {
