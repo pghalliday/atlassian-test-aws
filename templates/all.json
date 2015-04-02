@@ -26,6 +26,13 @@
 
   "Resources": {
 
+    "eip": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+
     "vpc": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -60,16 +67,9 @@
           "keyName": { "Ref": "keyName" },
           "availabilityZone": { "Ref": "availabilityZone1" },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
-          "privateIpAddress": "10.0.0.100"
+          "privateIpAddress": "10.0.0.100",
+          "publicIpAddress": { "Ref": "eip" }
         }
-      }
-    },
-
-    "elasticIp": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "InstanceId": { "Fn::GetAtt": [ "nginxFrontEnd", "Outputs.instanceId" ] },
-        "Domain": "vpc"
       }
     },
 
@@ -81,7 +81,7 @@
         "Type": "A",
         "TTL": "900",
         "ResourceRecords": [
-          { "Ref": "elasticIp" }
+          { "Ref": "eip" }
         ]
       }
     }

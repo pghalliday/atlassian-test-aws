@@ -27,6 +27,9 @@
     },
     "privateIpAddress": {
       "Type": "String"
+    },
+    "publicIpAddress": {
+      "Type": "String"
     }
   },
 
@@ -63,11 +66,46 @@
       }
     },
 
-    "nginxFrontEnd": {
-      "Type": "AWS::EC2::Instance",
+    "launchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Metadata": {
         "AWS::CloudFormation::Init": {
-          "config": {
+          "configSets": {
+            "configSet": [ "updateApt", "installEc2Tools", "assignIps", "runChef" ]
+          },
+          "updateApt": {
+            "commands": {
+              "updateApt": "apt-get update"
+            }
+          },
+          "installEc2Tools": {
+            "commands": {
+              "installEc2Tools": "apt-get install ec2-api-tools"
+            }
+          },
+          "assignIps": {
+            "files": {
+              "/root/assign-ips.sh": {
+                "content": { "Fn::Join": [ "", [
+                  "#!/bin/bash -e", "\n",
+                  "securityCredentials=`wget -q -O - http://169.254.169.254/latest/meta-data/iam/security-credentials/", { "Ref": "roleName" }, "`", "\n",
+                  "AWS_ACCESS_KEY=`echo $securityCredentials | sed -n 's/.*\"AccessKeyId\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
+                  "AWS_SECRET_KEY=`echo $securityCredentials | sed -n 's/.*\"SecretAccessKey\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
+                  "instanceid=`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`", "\n",
+                  "ec2-associate-address ", { "Ref": "publicIpAddress" }, " -i $instanceid", "\n"
+                ]]},
+                "mode": "000700",
+                "owner": "root",
+                "group": "root"
+              }
+            },
+            "commands": {
+              "assignIps": {
+                "command": "/root/assign-ips.sh"
+              }
+            }
+          },
+          "runChef": {
             "files": {
               "/tmp/NginxFrontEnd.tar.gz": {
                 "source": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks/NginxFrontEnd.tar.gz" ] ] },
@@ -102,15 +140,12 @@
         }
       },
       "Properties": {
-        "AvailabilityZone": { "Ref": "availabilityZone" },
         "ImageId": "ami-9a562df2",
         "InstanceType": "t2.micro",
         "KeyName": { "Ref": "keyName" },
-        "PrivateIpAddress": { "Ref": "privateIpAddress" },
-        "SecurityGroupIds": [
+        "SecurityGroups": [
           { "Ref": "nginxFrontEndSecurityGroup" }
         ],
-        "SubnetId": { "Ref": "subnetId" },
         "IamInstanceProfile": { "Ref": "iamInstanceProfile" },
         "UserData": { "Fn::Base64": { "Fn::Join": ["", [
           "#!/bin/bash -ex", "\n",
@@ -121,17 +156,27 @@
           "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest", "\n",
           "easy_install /root/aws-cfn-bootstrap-latest/", "\n",
           "/usr/local/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
-          "  -r nginxFrontEnd",
+          "  -r launchConfiguration",
+          "  -c configSet",
           "  --region ", { "Ref": "AWS::Region" }, "\n"
         ]]}}
+      }
+    },
+
+    "autoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [ { "Ref": "availabilityZone" } ],
+        "LaunchConfigurationName": { "Ref": "launchConfiguration" },
+        "VPCZoneIdentifier": [ { "Ref": "subnetId" } ],
+        "Cooldown": "10",
+        "MaxSize": "1",
+        "MinSize": "1"
       }
     }
 
   },
 
   "Outputs": {
-    "instanceId": {
-      "Value": { "Ref": "nginxFrontEnd" }
-    }
   }
 }

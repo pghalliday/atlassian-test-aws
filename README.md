@@ -70,6 +70,16 @@
             "Resource": [
                 "*"
             ]
+        },
+        {
+            "Sid": "Stmt1427985090000",
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:*"
+            ],
+            "Resource": [
+                "*"
+            ]
         }
     ]
 }
