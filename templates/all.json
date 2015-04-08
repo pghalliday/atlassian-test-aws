@@ -26,13 +26,6 @@
 
   "Resources": {
 
-    "eip": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc"
-      }
-    },
-
     "vpc": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -88,22 +81,10 @@
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginxFrontEnd.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
-          "eipAllocationId": { "Fn::GetAtt": [ "eip", "AllocationId" ] },
+          "availabilityZone": { "Ref": "availabilityZone1" },
+          "hostedZoneName": { "Ref": "hostedZoneName" },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
-      }
-    },
-
-    "atlassianRoute53RecordSet": {
-      "Type": "AWS::Route53::RecordSet",
-      "Properties": {
-        "HostedZoneName": { "Ref": "hostedZoneName" },
-        "Name": { "Fn::Join": [ "", [ "atlassian.", { "Ref": "hostedZoneName" } ] ] },
-        "Type": "A",
-        "TTL": "900",
-        "ResourceRecords": [
-          { "Ref": "eip" }
-        ]
       }
     }
 

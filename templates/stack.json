@@ -56,9 +56,9 @@
           "PolicyName": "ec2AllAccess",
           "PolicyDocument": {
             "Version" : "2012-10-17",
-            "Statement": [ {
+            "Statement": [{
               "Effect": "Allow",
-              "Action": "ec2:*",
+              "Action": "*",
               "Resource": "*"
             }]
           }
@@ -86,7 +86,7 @@
         "DefaultSshKeyName": { "Ref": "keyName" },
         "DefaultSubnetId": { "Ref": "subnetId" },
         "HostnameTheme": "Baked_Goods",
-        "Name": "nginxFrontEnd",
+        "Name": "atlassian-test",
         "ServiceRoleArn": { "Fn::GetAtt": [ "role", "Arn" ] },
         "UseCustomCookbooks": true,
         "UseOpsworksSecurityGroups": false,

@@ -7,7 +7,10 @@
     "vpcId": {
       "Type": "AWS::EC2::VPC::Id"
     },
-    "eipAllocationId": {
+    "availabilityZone": {
+      "Type": "String"
+    },
+    "hostedZoneName": {
       "Type": "String"
     },
     "stackId": {
@@ -51,7 +54,7 @@
     "layer": {
       "Type": "AWS::OpsWorks::Layer",
       "Properties": {
-        "AutoAssignElasticIps": false,
+        "AutoAssignElasticIps": true,
         "AutoAssignPublicIps": false,
         "CustomRecipes": {
           "Setup": [ "nginxFrontEnd::default" ]
@@ -66,20 +69,47 @@
       }
     },
 
+    "loadBalancer" : {
+      "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties" : {
+        "AvailabilityZones" : [ { "Ref": "availabilityZone"  } ],
+        "Listeners" : [{
+          "LoadBalancerPort" : "80",
+          "InstancePort" : "80",
+          "Protocol" : "HTTP"
+        }]
+      }
+    },
+
+    "elasticLoadBalancerAttachment": {
+      "Type": "AWS::OpsWorks::ElasticLoadBalancerAttachment",
+      "Properties": {
+        "ElasticLoadBalancerName" : { "Ref": "loadBalancer" },
+        "LayerId" : { "Ref": "layer" }
+      }
+    },
+
+    "recordSetGroup" : {
+      "Type" : "AWS::Route53::RecordSetGroup",
+      "Properties" : {
+        "HostedZoneName" : { "Ref": "hostedZoneName" },
+        "RecordSets" : [{
+          "Name" : { "Fn::Join": [ "", [ "atlassian", ".", { "Ref": "hostedZoneName" } ] ] },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer","CanonicalHostedZoneName" ] }
+          }
+        }]
+      }
+    },
+
     "instance": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.micro",
         "LayerIds": [ { "Ref": "layer" } ],
         "StackId": { "Ref": "stackId" }
-      }
-    },
-
-    "eipAssociation": {
-      "Type": "AWS::EC2::EIPAssociation",
-      "Properties": {
-        "AllocationId": { "Ref": "eipAllocationId" },
-        "InstanceId": { "Ref": "instance" }
       }
     }
 

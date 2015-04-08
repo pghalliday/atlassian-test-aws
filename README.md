@@ -80,6 +80,16 @@
             "Resource": [
                 "*"
             ]
+        },
+        {
+            "Sid": "Stmt1428536688000",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:*"
+            ],
+            "Resource": [
+                "*"
+            ]
         }
     ]
 }

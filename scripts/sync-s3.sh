@@ -13,7 +13,8 @@ mkdir -p $BUILD_DIR
 cp -r $TEMPLATES_DIR $BUILD_DIR
 
 rm -f *.tar.gz
-berks package
-mv cookbooks-*.tar.gz $BUILD_DIR/cookbooks.tar.gz
+berks vendor $BUILD_DIR/cookbooks
+( cd $BUILD_DIR/cookbooks && tar -czvf ../cookbooks.tar.gz * )
+rm -rf $BUILD_DIR/cookbooks
 
 aws s3 sync --profile atlassian-test --delete $BUILD_DIR s3://$BUCKET_NAME
