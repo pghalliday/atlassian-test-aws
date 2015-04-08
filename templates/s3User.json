@@ -1,0 +1,56 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "User with access to s3 bucket",
+
+  "Parameters": {
+    "bucketName": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "user": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "S3ReadOnlyAccess",
+          "PolicyDocument": {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "bucketName" }, "/*" ] ] }
+            }]
+          }
+        }]
+      }
+    },
+
+    "accessKey": {
+      "Type": "AWS::IAM::AccessKey",
+      "Properties": {
+        "Status": "Active",
+        "UserName": { "Ref": "user" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "accessKeyId": {
+      "Value": { "Ref": "accessKey" }
+    },
+    "secretAccessKey": {
+      "Value": { "Fn::GetAtt": [ "accessKey", "SecretAccessKey" ] }
+    }
+  }
+}

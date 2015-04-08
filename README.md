@@ -72,10 +72,10 @@
             ]
         },
         {
-            "Sid": "Stmt1427985090000",
+            "Sid": "Stmt1428498365000",
             "Effect": "Allow",
             "Action": [
-                "autoscaling:*"
+                "opsworks:*"
             ],
             "Resource": [
                 "*"

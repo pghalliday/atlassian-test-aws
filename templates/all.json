@@ -55,20 +55,41 @@
       }
     },
 
+    "s3User": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/s3User.json" ] ] },
+        "Parameters": {
+          "bucketName": { "Ref": "bucketName" }
+        }
+      }
+    },
+
+    "stack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/stack.json" ] ] },
+        "Parameters": {
+          "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
+          "bucketName": { "Ref": "bucketName" },
+          "instanceProfileArn": { "Fn::GetAtt": [ "instanceProfile", "Outputs.instanceProfileArn" ] },
+          "keyName": { "Ref": "keyName" },
+          "availabilityZone": { "Ref": "availabilityZone1" },
+          "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
+          "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
+          "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
+        }
+      }
+    },
+
     "nginxFrontEnd": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginxFrontEnd.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
-          "bucketName": { "Ref": "bucketName" },
-          "roleName": { "Fn::GetAtt": [ "instanceProfile", "Outputs.roleName" ] },
-          "iamInstanceProfile": { "Fn::GetAtt": [ "instanceProfile", "Outputs.iamInstanceProfile" ] },
-          "keyName": { "Ref": "keyName" },
-          "availabilityZone": { "Ref": "availabilityZone1" },
-          "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
-          "privateIpAddress": "10.0.0.100",
-          "publicIpAddress": { "Ref": "eip" }
+          "eipAllocationId": { "Fn::GetAtt": [ "eip", "AllocationId" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }
     },

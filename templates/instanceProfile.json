@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "IAM instance profile allowing gets from an S3 bucket",
+  "Description": "IAM instance profile for instances",
 
   "Parameters": {
     "bucketName": {
@@ -31,27 +31,7 @@
           }]
         },
         "Path": "/",
-        "Policies": [{
-          "PolicyName": "S3ReadOnlyAccess",
-          "PolicyDocument": {
-            "Version" : "2012-10-17",
-            "Statement": [ {
-              "Effect": "Allow",
-              "Action": "s3:GetObject",
-              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "bucketName" }, "/*" ] ] }
-            }]
-          }
-        }, {
-          "PolicyName": "assignElasticIp",
-          "PolicyDocument": {
-            "Version" : "2012-10-17",
-            "Statement": [ {
-              "Effect": "Allow",
-              "Action": "ec2:AssociateAddress",
-              "Resource": "*"
-            }]
-          }
-        }]
+        "Policies": []
       }
     },
 
@@ -66,11 +46,8 @@
   },
 
   "Outputs": {
-    "iamInstanceProfile": {
-      "Value": { "Ref": "instanceProfile" }
-    },
-    "roleName": {
-      "Value": { "Ref": "role" }
+    "instanceProfileArn": {
+      "Value": { "Fn::GetAtt": [ "instanceProfile", "Arn" ] }
     }
   }
 }

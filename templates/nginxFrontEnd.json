@@ -7,28 +7,10 @@
     "vpcId": {
       "Type": "AWS::EC2::VPC::Id"
     },
-    "bucketName": {
+    "eipAllocationId": {
       "Type": "String"
     },
-    "roleName": {
-      "Type": "String"
-    },
-    "iamInstanceProfile": {
-      "Type": "String"
-    },
-    "keyName": {
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },
-    "availabilityZone": {
-      "Type": "String"
-    },
-    "subnetId": {
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "privateIpAddress": {
-      "Type": "String"
-    },
-    "publicIpAddress": {
+    "stackId": {
       "Type": "String"
     }
   },
@@ -41,7 +23,7 @@
 
   "Resources": {
 
-    "nginxFrontEndSecurityGroup": {
+    "securityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "enable SSH and HTTP incoming and anything outgoing",
@@ -66,113 +48,38 @@
       }
     },
 
-    "launchConfiguration": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata": {
-        "AWS::CloudFormation::Init": {
-          "configSets": {
-            "configSet": [ "updateApt", "installEc2Tools", "assignIps", "runChef" ]
-          },
-          "updateApt": {
-            "commands": {
-              "updateApt": "apt-get update"
-            }
-          },
-          "installEc2Tools": {
-            "commands": {
-              "installEc2Tools": "apt-get -y install ec2-api-tools"
-            }
-          },
-          "assignIps": {
-            "files": {
-              "/root/assign-ips.sh": {
-                "content": { "Fn::Join": [ "", [
-                  "#!/bin/bash -e", "\n",
-                  "securityCredentials=`wget -q -O - http://169.254.169.254/latest/meta-data/iam/security-credentials/", { "Ref": "roleName" }, "`", "\n",
-                  "export AWS_ACCESS_KEY=`echo $securityCredentials | sed -n 's/.*\"AccessKeyId\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
-                  "export AWS_SECRET_KEY=`echo $securityCredentials | sed -n 's/.*\"SecretAccessKey\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
-                  "export AWS_DELEGATION_TOKEN=`echo $securityCredentials | sed -n 's/.*\"Token\"\\s*:\\s*\"\\([^\"]*\\)\".*/\\1/p'`", "\n",
-                  "instanceid=`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`", "\n",
-                  "ec2-associate-address ", { "Ref": "publicIpAddress" }, " -i $instanceid", "\n"
-                ]]},
-                "mode": "000700",
-                "owner": "root",
-                "group": "root"
-              }
-            },
-            "commands": {
-              "assignIps": {
-                "command": "/root/assign-ips.sh"
-              }
-            }
-          },
-          "runChef": {
-            "files": {
-              "/tmp/NginxFrontEnd.tar.gz": {
-                "source": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks/NginxFrontEnd.tar.gz" ] ] },
-                "Authentication": "s3",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              }
-            },
-            "commands": {
-              "001_InstallChef": {
-                "command": "wget -O - https://www.opscode.com/chef/install.sh | sh",
-                "test": "! which chef-client"
-              },
-              "002_UnpackCookbooks": {
-                "command": "rm -rf cookbooks && tar zxf NginxFrontEnd.tar.gz",
-                "cwd": "/tmp"
-              },
-              "003_RunChef": {
-                "command": "chef-client -z -r NginxFrontEnd",
-                "cwd": "/tmp"
-              }
-            }
-          }
-        },
-        "AWS::CloudFormation::Authentication": {
-          "s3": {
-            "type": "S3",
-            "buckets": [ { "Ref": "bucketName" } ],
-            "roleName": { "Ref": "roleName" }
-          }
-        }
-      },
+    "layer": {
+      "Type": "AWS::OpsWorks::Layer",
       "Properties": {
-        "ImageId": "ami-9a562df2",
-        "InstanceType": "t2.micro",
-        "KeyName": { "Ref": "keyName" },
-        "SecurityGroups": [
-          { "Ref": "nginxFrontEndSecurityGroup" }
-        ],
-        "IamInstanceProfile": { "Ref": "iamInstanceProfile" },
-        "UserData": { "Fn::Base64": { "Fn::Join": ["", [
-          "#!/bin/bash -ex", "\n",
-          "apt-get update", "\n",
-          "apt-get -y install python-setuptools", "\n",
-          "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz", "\n",
-          "mkdir -p /root/aws-cfn-bootstrap-latest", "\n",
-          "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest", "\n",
-          "easy_install /root/aws-cfn-bootstrap-latest/", "\n",
-          "/usr/local/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
-          "  -r launchConfiguration",
-          "  -c configSet",
-          "  --region ", { "Ref": "AWS::Region" }, "\n"
-        ]]}}
+        "AutoAssignElasticIps": false,
+        "AutoAssignPublicIps": false,
+        "CustomRecipes": {
+          "Setup": [ "nginxFrontEnd::default" ]
+        },
+        "CustomSecurityGroupIds": [ { "Ref": "securityGroup" } ],
+        "EnableAutoHealing": true,
+        "InstallUpdatesOnBoot": true,
+        "Name": "nginxFrontEnd",
+        "Shortname": "nginx",
+        "StackId": { "Ref": "stackId" },
+        "Type": "custom"
       }
     },
 
-    "autoScalingGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
+    "instance": {
+      "Type": "AWS::OpsWorks::Instance",
       "Properties": {
-        "AvailabilityZones": [ { "Ref": "availabilityZone" } ],
-        "LaunchConfigurationName": { "Ref": "launchConfiguration" },
-        "VPCZoneIdentifier": [ { "Ref": "subnetId" } ],
-        "Cooldown": "10",
-        "MaxSize": "1",
-        "MinSize": "1"
+        "InstanceType": "t2.micro",
+        "LayerIds": [ { "Ref": "layer" } ],
+        "StackId": { "Ref": "stackId" }
+      }
+    },
+
+    "eipAssociation": {
+      "Type": "AWS::EC2::EIPAssociation",
+      "Properties": {
+        "AllocationId": { "Ref": "eipAllocationId" },
+        "InstanceId": { "Ref": "instance" }
       }
     }
 

@@ -1,0 +1,104 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "OpsWorks stack containing all instances",
+
+  "Parameters": {
+    "vpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "bucketName": {
+      "Type": "String"
+    },
+    "instanceProfileArn": {
+      "Type": "String"
+    },
+    "keyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "availabilityZone": {
+      "Type": "String"
+    },
+    "subnetId": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "s3AccessKeyId": {
+      "Type": "String"
+    },
+    "s3SecretAccessKey": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "opsworks.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "ec2AllAccess",
+          "PolicyDocument": {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect": "Allow",
+              "Action": "ec2:*",
+              "Resource": "*"
+            }]
+          }
+        }]
+      }
+    },
+
+    "stack": {
+      "Type": "AWS::OpsWorks::Stack",
+      "Properties": {
+        "ConfigurationManager": {
+          "Name": "Chef",
+          "Version": "11.10"
+        },
+        "CustomCookbooksSource": {
+          "Password": { "Ref": "s3SecretAccessKey" },
+          "Username": { "Ref": "s3AccessKeyId" },
+          "Type": "s3",
+          "Url": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks.tar.gz" ] ] }
+        },
+        "DefaultAvailabilityZone": { "Ref": "availabilityZone" },
+        "DefaultInstanceProfileArn": { "Ref": "instanceProfileArn" },
+        "DefaultOs": "Ubuntu 14.04 LTS",
+        "DefaultRootDeviceType": "ebs",
+        "DefaultSshKeyName": { "Ref": "keyName" },
+        "DefaultSubnetId": { "Ref": "subnetId" },
+        "HostnameTheme": "Baked_Goods",
+        "Name": "nginxFrontEnd",
+        "ServiceRoleArn": { "Fn::GetAtt": [ "role", "Arn" ] },
+        "UseCustomCookbooks": true,
+        "UseOpsworksSecurityGroups": false,
+        "VpcId": { "Ref": "vpcId" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "stackId": {
+      "Value": { "Ref": "stack" }
+    }
+  }
+}
