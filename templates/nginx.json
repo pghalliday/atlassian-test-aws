@@ -1,0 +1,153 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Nginx front end instance",
+
+  "Parameters": {
+    "vpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "subnetId": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "hostedZoneName": {
+      "Type": "String"
+    },
+    "crowdHostName": {
+      "Type": "String"
+    },
+    "jiraHostName": {
+      "Type": "String"
+    },
+    "confluenceHostName": {
+      "Type": "String"
+    },
+    "stashHostName": {
+      "Type": "String"
+    },
+    "bambooHostName": {
+      "Type": "String"
+    },
+    "stackId": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "securityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Port 80 for the load balancer",
+        "SecurityGroupIngress": {
+          "CidrIp": "0.0.0.0/0",
+          "FromPort": 80,
+          "IpProtocol": "tcp",
+          "ToPort": 80
+        },
+        "VpcId": { "Ref": "vpcId" }
+      }
+    },
+
+    "layer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "AutoAssignElasticIps": false,
+        "AutoAssignPublicIps": true,
+        "CustomRecipes": {
+          "Setup": [ "nginx::setup" ],
+          "Configure": [ "nginx::configure" ]
+        },
+        "EnableAutoHealing": true,
+        "InstallUpdatesOnBoot": true,
+        "Name": "nginx",
+        "Shortname": "nginx",
+        "StackId": { "Ref": "stackId" },
+        "Type": "custom"
+      }
+    },
+
+    "loadBalancer" : {
+      "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties" : {
+        "Subnets" : [ { "Ref": "subnetId" } ],
+        "Listeners" : [{
+          "LoadBalancerPort" : "80",
+          "InstancePort" : "80",
+          "Protocol" : "HTTP"
+        }],
+        "SecurityGroups": [ { "Ref": "securityGroup" } ]
+      }
+    },
+
+    "elasticLoadBalancerAttachment": {
+      "Type": "AWS::OpsWorks::ElasticLoadBalancerAttachment",
+      "Properties": {
+        "ElasticLoadBalancerName" : { "Ref": "loadBalancer" },
+        "LayerId" : { "Ref": "layer" }
+      }
+    },
+
+    "recordSetGroup" : {
+      "Type" : "AWS::Route53::RecordSetGroup",
+      "Properties" : {
+        "HostedZoneName" : { "Ref": "hostedZoneName" },
+        "RecordSets" : [{
+          "Name" : { "Ref": "crowdHostName" },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          }
+        }, {
+          "Name" : { "Ref": "jiraHostName" },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          }
+        }, {
+          "Name" : { "Ref": "confluenceHostName" },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          }
+        }, {
+          "Name" : { "Ref": "stashHostName" },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          }
+        }, {
+          "Name" : { "Ref": "bambooHostName" },
+          "Type" : "A",
+          "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          }
+        }]
+      }
+    },
+
+    "instance": {
+      "Type": "AWS::OpsWorks::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "LayerIds": [ { "Ref": "layer" } ],
+        "StackId": { "Ref": "stackId" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+  }
+}

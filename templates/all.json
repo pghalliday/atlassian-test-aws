@@ -15,6 +15,46 @@
     },
     "hostedZoneName": {
       "Type": "String"
+    },
+    "crowdSubDomain": {
+      "Type": "String",
+      "Default": "crowd"
+    },
+    "crowdPort": {
+      "Type": "Number",
+      "Default": "8095"
+    },
+    "jiraSubDomain": {
+      "Type": "String",
+      "Default": "jira"
+    },
+    "jiraPort": {
+      "Type": "Number",
+      "Default": "8080"
+    },
+    "confluenceSubDomain": {
+      "Type": "String",
+      "Default": "confluence"
+    },
+    "confluencePort": {
+      "Type": "Number",
+      "Default": "8090"
+    },
+    "stashSubDomain": {
+      "Type": "String",
+      "Default": "stash"
+    },
+    "stashPort": {
+      "Type": "Number",
+      "Default": "7990"
+    },
+    "bambooSubDomain": {
+      "Type": "String",
+      "Default": "bamboo"
+    },
+    "bambooPort": {
+      "Type": "Number",
+      "Default": "8085"
     }
   },
 
@@ -38,16 +78,6 @@
       }
     },
 
-    "instanceProfile": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/instanceProfile.json" ] ] },
-        "Parameters": {
-          "bucketName": { "Ref": "bucketName" }
-        }
-      }
-    },
-
     "s3User": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -65,24 +95,38 @@
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "bucketName": { "Ref": "bucketName" },
-          "instanceProfileArn": { "Fn::GetAtt": [ "instanceProfile", "Outputs.instanceProfileArn" ] },
           "keyName": { "Ref": "keyName" },
           "availabilityZone": { "Ref": "availabilityZone1" },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
+          "crowdHostName" : { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "crowdPort": { "Ref": "crowdPort" },
+          "jiraHostName" : { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "jiraPort": { "Ref": "jiraPort" },
+          "confluenceHostName" : { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "confluencePort": { "Ref": "confluencePort" },
+          "stashHostName" : { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "stashPort": { "Ref": "stashPort" },
+          "bambooHostName" : { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "bambooPort": { "Ref": "bambooPort" },
           "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
           "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
         }
       }
     },
 
-    "nginxFrontEnd": {
+    "nginx": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginxFrontEnd.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginx.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
-          "availabilityZone": { "Ref": "availabilityZone1" },
+          "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "hostedZoneName": { "Ref": "hostedZoneName" },
+          "crowdHostName" : { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "jiraHostName" : { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "confluenceHostName" : { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "stashHostName" : { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "bambooHostName" : { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }

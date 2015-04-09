@@ -10,9 +10,6 @@
     "bucketName": {
       "Type": "String"
     },
-    "instanceProfileArn": {
-      "Type": "String"
-    },
     "keyName": {
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
@@ -21,6 +18,36 @@
     },
     "subnetId": {
       "Type": "AWS::EC2::Subnet::Id"
+    },
+    "crowdHostName": {
+      "Type": "String"
+    },
+    "crowdPort": {
+      "Type": "String"
+    },
+    "jiraHostName": {
+      "Type": "String"
+    },
+    "jiraPort": {
+      "Type": "String"
+    },
+    "confluenceHostName": {
+      "Type": "String"
+    },
+    "confluencePort": {
+      "Type": "String"
+    },
+    "stashHostName": {
+      "Type": "String"
+    },
+    "stashPort": {
+      "Type": "String"
+    },
+    "bambooHostName": {
+      "Type": "String"
+    },
+    "bambooPort": {
+      "Type": "String"
     },
     "s3AccessKeyId": {
       "Type": "String"
@@ -38,34 +65,6 @@
 
   "Resources": {
 
-    "role": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version" : "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [ "opsworks.amazonaws.com" ]
-            },
-            "Action": [ "sts:AssumeRole" ]
-          }]
-        },
-        "Path": "/",
-        "Policies": [{
-          "PolicyName": "ec2AllAccess",
-          "PolicyDocument": {
-            "Version" : "2012-10-17",
-            "Statement": [{
-              "Effect": "Allow",
-              "Action": "*",
-              "Resource": "*"
-            }]
-          }
-        }]
-      }
-    },
-
     "stack": {
       "Type": "AWS::OpsWorks::Stack",
       "Properties": {
@@ -79,17 +78,41 @@
           "Type": "s3",
           "Url": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks.tar.gz" ] ] }
         },
+        "CustomJson": {
+          "nginx": {
+            "crowd": {
+              "host": { "Ref": "crowdHostName" },
+              "port": { "Ref": "crowdPort" }
+            },
+            "jira": {
+              "host": { "Ref": "jiraHostName" },
+              "port": { "Ref": "jiraPort" }
+            },
+            "confluence": {
+              "host": { "Ref": "confluenceHostName" },
+              "port": { "Ref": "confluencePort" }
+            },
+            "stash": {
+              "host": { "Ref": "stashHostName" },
+              "port": { "Ref": "stashPort" }
+            },
+            "bamboo": {
+              "host": { "Ref": "bambooHostName" },
+              "port": { "Ref": "bambooPort" }
+            }
+          }
+        },
+        "ServiceRoleArn" : { "Fn::Join": ["", ["arn:aws:iam::", {"Ref":"AWS::AccountId"}, ":role/aws-opsworks-service-role"]] },
+        "DefaultInstanceProfileArn" : { "Fn::Join": ["", ["arn:aws:iam::", {"Ref":"AWS::AccountId"}, ":instance-profile/aws-opsworks-ec2-role"]] },
         "DefaultAvailabilityZone": { "Ref": "availabilityZone" },
-        "DefaultInstanceProfileArn": { "Ref": "instanceProfileArn" },
         "DefaultOs": "Ubuntu 14.04 LTS",
         "DefaultRootDeviceType": "ebs",
         "DefaultSshKeyName": { "Ref": "keyName" },
         "DefaultSubnetId": { "Ref": "subnetId" },
         "HostnameTheme": "Baked_Goods",
         "Name": "atlassian-test",
-        "ServiceRoleArn": { "Fn::GetAtt": [ "role", "Arn" ] },
         "UseCustomCookbooks": true,
-        "UseOpsworksSecurityGroups": false,
+        "UseOpsworksSecurityGroups": true,
         "VpcId": { "Ref": "vpcId" }
       }
     }

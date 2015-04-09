@@ -1,17 +1,23 @@
 DEPENDENCIES
   bamboo
     path: cookbooks/bamboo
+  crowd
+    path: cookbooks/crowd
   jira
     path: cookbooks/jira
-  nginxFrontEnd
-    path: cookbooks/nginxFrontEnd
+  nginx
+    path: cookbooks/nginx
   stash
     path: cookbooks/stash
 
 GRAPH
+  apt (2.7.0)
   bamboo (0.1.0)
+    java (>= 0.0.0)
+  crowd (0.1.0)
     java (>= 0.0.0)
   java (1.31.0)
   jira (0.1.0)
-  nginxFrontEnd (0.1.0)
+  nginx (0.1.0)
+    apt (>= 0.0.0)
   stash (0.1.0)

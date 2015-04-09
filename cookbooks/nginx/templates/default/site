@@ -1,0 +1,13 @@
+server {
+    listen       80;
+    server_name  <%= @host %>;
+
+    location / {
+        proxy_pass http://<%= @ip %>:<%= @port %>;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_set_header    X-Forwarded-for $remote_addr;
+        port_in_redirect off;
+        proxy_redirect   http://<%= @ip %>:<%= @port %>/ /;
+    }
+}
