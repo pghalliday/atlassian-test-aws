@@ -6,7 +6,7 @@
 - Create an S3 bucket to hold the template and cookbooks - `$AT_BUCKET_NAME`
 - Create an EC2 key pair to associate with instances - `$AT_KEY_PAIR`
 - Create an IAM user with full administrator permissions
-- Add a Route53 hosted zone - `$AT_HOSTED_ZONE` (don't use the trailing dot in `parameters.sh`)
+- Add a Route53 hosted zone - `$AT_DOMAIN` (don't use the trailing dot in `parameters.sh`)
 - Configure an AWS profile with the keys from the IAM user created above, setting your default region (eg. `us-east-1`) and the default output format to `text`
 
 ```
