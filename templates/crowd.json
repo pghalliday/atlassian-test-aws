@@ -1,0 +1,50 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Crowd instance",
+
+  "Parameters": {
+    "stackId": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "layer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "AutoAssignElasticIps": false,
+        "AutoAssignPublicIps": true,
+        "CustomRecipes": {
+          "Setup": [ "crowd::setup" ]
+        },
+        "EnableAutoHealing": true,
+        "InstallUpdatesOnBoot": true,
+        "Name": "crowd",
+        "Shortname": "crowd",
+        "StackId": { "Ref": "stackId" },
+        "Type": "custom"
+      }
+    },
+
+    "instance": {
+      "Type": "AWS::OpsWorks::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "LayerIds": [ { "Ref": "layer" } ],
+        "StackId": { "Ref": "stackId" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+  }
+}

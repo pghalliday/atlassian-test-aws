@@ -1,3 +1,7 @@
+service 'nginx' do
+  supports status: true, restart: true, reload: true
+end
+
 %w(
   crowd
   jira
@@ -7,7 +11,7 @@
 ).each do |service|
   layer = node['opsworks']['layers'][service]
   if layer
-    instance = layer['instances'].first
+    instance = layer['instances'].first[1]
     if instance
       ip = instance['private_ip']
     end
@@ -16,8 +20,8 @@
     template "/etc/nginx/sites-available/#{service}" do
       source 'site'
       variables(
-        host: node['nginx'][service]['host'],
-        port: node['nginx'][service]['port'],
+        host: node['atlassian-test'][service]['host'],
+        port: node['atlassian-test'][service]['port'],
         ip: ip
       )
       notifies :restart, 'service[nginx]', :delayed

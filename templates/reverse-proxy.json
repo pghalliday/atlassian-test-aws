@@ -10,22 +10,22 @@
     "subnetId": {
       "Type": "AWS::EC2::Subnet::Id"
     },
-    "hostedZoneName": {
+    "domain": {
       "Type": "String"
     },
-    "crowdHostName": {
+    "crowdSubDomain": {
       "Type": "String"
     },
-    "jiraHostName": {
+    "jiraSubDomain": {
       "Type": "String"
     },
-    "confluenceHostName": {
+    "confluenceSubDomain": {
       "Type": "String"
     },
-    "stashHostName": {
+    "stashSubDomain": {
       "Type": "String"
     },
-    "bambooHostName": {
+    "bambooSubDomain": {
       "Type": "String"
     },
     "stackId": {
@@ -61,8 +61,8 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "nginx::setup" ],
-          "Configure": [ "nginx::configure" ]
+          "Setup": [ "reverse-proxy::setup" ],
+          "Configure": [ "reverse-proxy::configure" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
@@ -95,43 +95,43 @@
     },
 
     "recordSetGroup" : {
-      "Type" : "AWS::Route53::RecordSetGroup",
-      "Properties" : {
-        "HostedZoneName" : { "Ref": "hostedZoneName" },
-        "RecordSets" : [{
-          "Name" : { "Ref": "crowdHostName" },
-          "Type" : "A",
-          "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneName": { "Fn::Join": [ "", [ { "Ref": "domain" }, "." ] ] },
+        "RecordSets": [{
+          "Name": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "A",
+          "AliasTarget": {
+            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
           }
         }, {
-          "Name" : { "Ref": "jiraHostName" },
-          "Type" : "A",
-          "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          "Name": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "A",
+          "AliasTarget": {
+            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
           }
         }, {
-          "Name" : { "Ref": "confluenceHostName" },
-          "Type" : "A",
-          "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          "Name": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "A",
+          "AliasTarget": {
+            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
           }
         }, {
-          "Name" : { "Ref": "stashHostName" },
-          "Type" : "A",
-          "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          "Name": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "A",
+          "AliasTarget": {
+            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
           }
         }, {
-          "Name" : { "Ref": "bambooHostName" },
-          "Type" : "A",
-          "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName" : { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
+          "Name": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "A",
+          "AliasTarget": {
+            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
+            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
           }
         }]
       }

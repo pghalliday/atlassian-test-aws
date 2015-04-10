@@ -13,7 +13,7 @@
     "keyName": {
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
-    "hostedZoneName": {
+    "domain": {
       "Type": "String"
     },
     "crowdSubDomain": {
@@ -81,7 +81,7 @@
     "s3User": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/s3User.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/s3-user.json" ] ] },
         "Parameters": {
           "bucketName": { "Ref": "bucketName" }
         }
@@ -98,15 +98,16 @@
           "keyName": { "Ref": "keyName" },
           "availabilityZone": { "Ref": "availabilityZone1" },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
-          "crowdHostName" : { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "domain": { "Ref": "domain" },
+          "crowdSubDomain" : { "Ref": "crowdSubDomain" },
           "crowdPort": { "Ref": "crowdPort" },
-          "jiraHostName" : { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "jiraSubDomain" : { "Ref": "jiraSubDomain" },
           "jiraPort": { "Ref": "jiraPort" },
-          "confluenceHostName" : { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
           "confluencePort": { "Ref": "confluencePort" },
-          "stashHostName" : { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "stashSubDomain" : { "Ref": "stashSubDomain" },
           "stashPort": { "Ref": "stashPort" },
-          "bambooHostName" : { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "bambooSubDomain" : { "Ref": "bambooSubDomain" },
           "bambooPort": { "Ref": "bambooPort" },
           "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
           "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
@@ -114,19 +115,29 @@
       }
     },
 
-    "nginx": {
+    "reverseProxy": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/nginx.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/reverse-proxy.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
-          "hostedZoneName": { "Ref": "hostedZoneName" },
-          "crowdHostName" : { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
-          "jiraHostName" : { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
-          "confluenceHostName" : { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
-          "stashHostName" : { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
-          "bambooHostName" : { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "hostedZoneName" } ] ] },
+          "domain": { "Ref": "domain" },
+          "crowdSubDomain" : { "Ref": "crowdSubDomain" },
+          "jiraSubDomain" : { "Ref": "jiraSubDomain" },
+          "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
+          "stashSubDomain" : { "Ref": "stashSubDomain" },
+          "bambooSubDomain" : { "Ref": "bambooSubDomain" },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
+    "crowd": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
+        "Parameters": {
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }

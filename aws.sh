@@ -31,8 +31,8 @@ else
     "ParameterValue": "'$AT_BUCKET_NAME'",
     "UsePreviousValue": false
   }, {
-    "ParameterKey": "hostedZoneName",
-    "ParameterValue": "'$AT_HOSTED_ZONE'",
+    "ParameterKey": "domain",
+    "ParameterValue": "'$AT_DOMAIN'",
     "UsePreviousValue": false
   }, {
     "ParameterKey": "availabilityZone1",

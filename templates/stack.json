@@ -19,31 +19,34 @@
     "subnetId": {
       "Type": "AWS::EC2::Subnet::Id"
     },
-    "crowdHostName": {
+    "domain": {
+      "Type": "String"
+    },
+    "crowdSubDomain": {
       "Type": "String"
     },
     "crowdPort": {
       "Type": "String"
     },
-    "jiraHostName": {
+    "jiraSubDomain": {
       "Type": "String"
     },
     "jiraPort": {
       "Type": "String"
     },
-    "confluenceHostName": {
+    "confluenceSubDomain": {
       "Type": "String"
     },
     "confluencePort": {
       "Type": "String"
     },
-    "stashHostName": {
+    "stashSubDomain": {
       "Type": "String"
     },
     "stashPort": {
       "Type": "String"
     },
-    "bambooHostName": {
+    "bambooSubDomain": {
       "Type": "String"
     },
     "bambooPort": {
@@ -79,25 +82,25 @@
           "Url": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cookbooks.tar.gz" ] ] }
         },
         "CustomJson": {
-          "nginx": {
+          "atlassian-test": {
             "crowd": {
-              "host": { "Ref": "crowdHostName" },
+              "host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "crowdPort" }
             },
             "jira": {
-              "host": { "Ref": "jiraHostName" },
+              "host": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "jiraPort" }
             },
             "confluence": {
-              "host": { "Ref": "confluenceHostName" },
+              "host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "confluencePort" }
             },
             "stash": {
-              "host": { "Ref": "stashHostName" },
+              "host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "stashPort" }
             },
             "bamboo": {
-              "host": { "Ref": "bambooHostName" },
+              "host": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "bambooPort" }
             }
           }
