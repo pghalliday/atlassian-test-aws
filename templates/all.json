@@ -22,8 +22,18 @@
     "dbPassword": {
       "Type": "String"
     },
+    "gmailUsername": {
+      "Type": "String"
+    },
+    "gmailPassword": {
+      "Type": "String"
+    },
     "domain": {
       "Type": "String"
+    },
+    "proxyPort": {
+      "Type": "Number",
+      "Default": "80"
     },
     "crowdSubDomain": {
       "Type": "String",
@@ -32,6 +42,10 @@
     "crowdPort": {
       "Type": "Number",
       "Default": "8095"
+    },
+    "crowdRedirectPort": {
+      "Type": "Number",
+      "Default": "8443"
     },
     "jiraSubDomain": {
       "Type": "String",
@@ -123,8 +137,10 @@
           "availabilityZone": { "Ref": "availabilityZone1" },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "domain": { "Ref": "domain" },
+          "proxyPort": { "Ref": "proxyPort" },
           "crowdSubDomain" : { "Ref": "crowdSubDomain" },
           "crowdPort": { "Ref": "crowdPort" },
+          "crowdRedirectPort": { "Ref": "crowdRedirectPort" },
           "jiraSubDomain" : { "Ref": "jiraSubDomain" },
           "jiraPort": { "Ref": "jiraPort" },
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
@@ -135,6 +151,10 @@
           "bambooPort": { "Ref": "bambooPort" },
           "dbEndpointAddress": { "Fn::GetAtt": [ "rds", "Outputs.endpointAddress" ] },
           "dbEndpointPort": { "Fn::GetAtt": [ "rds", "Outputs.endpointPort" ] },
+          "dbUsername": { "Ref": "dbUsername" },
+          "dbPassword": { "Ref": "dbPassword" },
+          "gmailUsername": { "Ref": "gmailUsername" },
+          "gmailPassword": { "Ref": "gmailPassword" },
           "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
           "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
         }
@@ -149,6 +169,7 @@
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "domain": { "Ref": "domain" },
+          "proxyPort": { "Ref": "proxyPort" },
           "crowdSubDomain" : { "Ref": "crowdSubDomain" },
           "jiraSubDomain" : { "Ref": "jiraSubDomain" },
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },

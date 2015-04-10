@@ -13,6 +13,9 @@
     "domain": {
       "Type": "String"
     },
+    "proxyPort": {
+      "Type": "Number"
+    },
     "crowdSubDomain": {
       "Type": "String"
     },
@@ -44,12 +47,12 @@
     "securityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Port 80 for the load balancer",
+        "GroupDescription": "Port for the load balancer",
         "SecurityGroupIngress": {
           "CidrIp": "0.0.0.0/0",
-          "FromPort": 80,
+          "FromPort": { "Ref": "proxyPort" },
           "IpProtocol": "tcp",
-          "ToPort": 80
+          "ToPort": { "Ref": "proxyPort" }
         },
         "VpcId": { "Ref": "vpcId" }
       }
@@ -78,8 +81,8 @@
       "Properties" : {
         "Subnets" : [ { "Ref": "subnetId" } ],
         "Listeners" : [{
-          "LoadBalancerPort" : "80",
-          "InstancePort" : "80",
+          "LoadBalancerPort" : { "Ref": "proxyPort" },
+          "InstancePort" : { "Ref": "proxyPort" },
           "Protocol" : "HTTP"
         }],
         "SecurityGroups": [ { "Ref": "securityGroup" } ]

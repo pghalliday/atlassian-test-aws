@@ -11,16 +11,16 @@ end
 ).each do |service|
   layer = node['opsworks']['layers'][service]
   if layer
-    instance = layer['instances'].first[1]
+    instance = layer['instances'].first
     if instance
-      ip = instance['private_ip']
+      ip = instance[1]['private_ip']
     end
   end
   if ip
     template "/etc/nginx/sites-available/#{service}" do
       source 'site'
       variables(
-        host: node['atlassian-test'][service]['host'],
+        host: node['atlassian-test'][service]['proxy_host'],
         port: node['atlassian-test'][service]['port'],
         ip: ip
       )

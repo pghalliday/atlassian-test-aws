@@ -23,6 +23,8 @@ cp example.parameters.sh parameters.sh
 vim parameters.sh
 ```
 
+- Create a Gmail account to use for SMTP - `$AT_GMAIL_USERNAME`, `$AT_GMAIL_PASSWORD`
+
 ## Usage
 
 To create the stack (will validate the templates and upload everything to S3 first)

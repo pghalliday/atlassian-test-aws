@@ -50,5 +50,13 @@ else
     "ParameterKey": "availabilityZone2",
     "ParameterValue": "'$AT_AVAILABILITY_ZONE_2'",
     "UsePreviousValue": false
+  }, {
+    "ParameterKey": "gmailUsername",
+    "ParameterValue": "'$AT_GMAIL_USERNAME'",
+    "UsePreviousValue": false
+  }, {
+    "ParameterKey": "gmailPassword",
+    "ParameterValue": "'$AT_GMAIL_PASSWORD'",
+    "UsePreviousValue": false
   }]'
 fi

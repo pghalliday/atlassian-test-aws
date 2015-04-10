@@ -1,0 +1,12 @@
+application.name                        crowd-openid-server
+application.password                    password
+application.base.url                    http://localhost:<%= @port %>/openidserver
+application.login.url                   http://localhost:<%= @port %>/openidserver
+application.login.url.template          http://localhost:<%= @port %>/openidserver?returnToUrl=${RETURN_TO_URL}
+
+crowd.server.url                        http://localhost:<%= @port %>/crowd/services/
+
+session.isauthenticated                 session.isauthenticated
+session.tokenkey                        session.tokenkey
+session.validationinterval              0
+session.lastvalidation                  session.lastvalidation

@@ -22,35 +22,41 @@
     "domain": {
       "Type": "String"
     },
+    "proxyPort": {
+      "Type": "Number"
+    },
     "crowdSubDomain": {
       "Type": "String"
     },
     "crowdPort": {
-      "Type": "String"
+      "Type": "Number"
+    },
+    "crowdRedirectPort": {
+      "Type": "Number"
     },
     "jiraSubDomain": {
       "Type": "String"
     },
     "jiraPort": {
-      "Type": "String"
+      "Type": "Number"
     },
     "confluenceSubDomain": {
       "Type": "String"
     },
     "confluencePort": {
-      "Type": "String"
+      "Type": "Number"
     },
     "stashSubDomain": {
       "Type": "String"
     },
     "stashPort": {
-      "Type": "String"
+      "Type": "Number"
     },
     "bambooSubDomain": {
       "Type": "String"
     },
     "bambooPort": {
-      "Type": "String"
+      "Type": "Number"
     },
     "s3AccessKeyId": {
       "Type": "String"
@@ -63,6 +69,18 @@
     },
     "dbEndpointPort": {
       "Type": "Number"
+    },
+    "dbUsername": {
+      "Type": "String"
+    },
+    "dbPassword": {
+      "Type": "String"
+    },
+    "gmailUsername": {
+      "Type": "String"
+    },
+    "gmailPassword": {
+      "Type": "String"
     }
   },
 
@@ -91,26 +109,34 @@
           "atlassian-test": {
             "database": {
               "address": { "Ref": "dbEndpointAddress" },
-              "port": { "Ref": "dbEndpointPort" }
+              "port": { "Ref": "dbEndpointPort" },
+              "username": { "Ref": "dbUsername" },
+              "password": { "Ref": "dbPassword" }
             }, 
+            "gmail": {
+              "username": { "Ref": "gmailUsername" },
+              "password": { "Ref": "gmailPassword" }
+            },
+            "proxy_port": { "Ref": "proxyPort" },
             "crowd": {
-              "host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
-              "port": { "Ref": "crowdPort" }
+              "proxy_host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "port": { "Ref": "crowdPort" },
+              "redirect_port": { "Ref": "crowdRedirectPort" }
             },
             "jira": {
-              "host": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "proxy_host": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "jiraPort" }
             },
             "confluence": {
-              "host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "proxy_host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "confluencePort" }
             },
             "stash": {
-              "host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "proxy_host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "stashPort" }
             },
             "bamboo": {
-              "host": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "proxy_host": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "bambooPort" }
             }
           }

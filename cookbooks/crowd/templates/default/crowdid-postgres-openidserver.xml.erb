@@ -1,0 +1,22 @@
+<Context path="/openidserver" docBase="../../crowd-openidserver-webapp">
+
+    <Resource name="jdbc/CrowdIDDS" auth="Container" type="javax.sql.DataSource"
+      username="<%= @username %>"
+      password="<%= @password %>"
+      driverClassName="org.postgresql.Driver"
+      url="jdbc:postgresql://<%= @host %>:<%= @port %>/<%= @database %>"
+    />
+
+    <!-- NOTE: When a database server reboots or their is a network failure all the connections in the
+    * connection pool are broken and normally this requires a Application Server reboot. If you include the
+    * parameter validationQuery="{QUERY FOR YOUR DB HERE} as show below a new connection is created to replace it.
+    * For more information see http://confluence.atlassian.com/display/JIRA/Surviving+Connection+Closures
+    *
+    * validationQuery="Select 1"
+    -->
+
+    <!-- NOTE: If you use a database other than hsqldb:
+    * delete the minEvictableIdleTimeMillis and timeBetweenEvictionRunsMillis attributes
+    -->
+
+</Context>
