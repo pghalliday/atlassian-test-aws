@@ -10,8 +10,17 @@
     "availabilityZone1": {
       "Type": "String"
     },
+    "availabilityZone2": {
+      "Type": "String"
+    },
     "keyName": {
       "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "dbUsername": {
+      "Type": "String"
+    },
+    "dbPassword": {
+      "Type": "String"
     },
     "domain": {
       "Type": "String"
@@ -73,7 +82,22 @@
         "Parameters": {
           "cidrBlock": "10.0.0.0/16",
           "subnet1CidrBlock": "10.0.0.0/24",
-          "subnet1AvailabilityZone": { "Ref": "availabilityZone1" }
+          "subnet1AvailabilityZone": { "Ref": "availabilityZone1" },
+          "subnet2CidrBlock": "10.0.1.0/24",
+          "subnet2AvailabilityZone": { "Ref": "availabilityZone2" }
+        }
+      }
+    },
+
+    "rds": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/rds.json" ] ] },
+        "Parameters": {
+          "subnet1Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
+          "subnet2Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet2Id" ] },
+          "username": { "Ref": "dbUsername" },
+          "password": { "Ref": "dbPassword" }
         }
       }
     },
@@ -109,6 +133,8 @@
           "stashPort": { "Ref": "stashPort" },
           "bambooSubDomain" : { "Ref": "bambooSubDomain" },
           "bambooPort": { "Ref": "bambooPort" },
+          "dbEndpointAddress": { "Fn::GetAtt": [ "rds", "Outputs.endpointAddress" ] },
+          "dbEndpointPort": { "Fn::GetAtt": [ "rds", "Outputs.endpointPort" ] },
           "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
           "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
         }

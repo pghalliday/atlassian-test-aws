@@ -57,6 +57,12 @@
     },
     "s3SecretAccessKey": {
       "Type": "String"
+    },
+    "dbEndpointAddress": {
+      "Type": "String"
+    },
+    "dbEndpointPort": {
+      "Type": "Number"
     }
   },
 
@@ -83,6 +89,10 @@
         },
         "CustomJson": {
           "atlassian-test": {
+            "database": {
+              "address": { "Ref": "dbEndpointAddress" },
+              "port": { "Ref": "dbEndpointPort" }
+            }, 
             "crowd": {
               "host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "crowdPort" }

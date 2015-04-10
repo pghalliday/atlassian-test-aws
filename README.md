@@ -6,6 +6,7 @@
 - Create an S3 bucket to hold the template and cookbooks - `$AT_BUCKET_NAME`
 - Create an EC2 key pair to associate with instances - `$AT_KEY_PAIR`
 - Create an IAM user with full administrator permissions
+- Choose a user name and password for the master database user - `$AT_DB_USERNAME`, `$AT_DB_PASSWORD`
 - Add a Route53 hosted zone - `$AT_DOMAIN` (don't use the trailing dot in `parameters.sh`)
 - Configure an AWS profile with the keys from the IAM user created above, setting your default region (eg. `us-east-1`) and the default output format to `text`
 
@@ -14,7 +15,7 @@ aws configure --profile atlassian-test
 ```
 
 - Choose a first availability zone in your default region (eg. `us-east-1b`) - `$AT_AVAILABILITY_ZONE_1`
-
+- Choose a second availability zone in your default region (eg. `us-east-1c`, the RDS instance requires 2 availability zones) - `$AT_AVAILABILITY_ZONE_2`
 - Copy `example.parameters.sh` to `parameters.sh` and set your parameters in there.
 
 ```

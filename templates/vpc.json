@@ -12,6 +12,12 @@
     },
     "subnet1AvailabilityZone": {
       "Type": "String"
+    },
+    "subnet2CidrBlock": {
+      "Type": "String"
+    },
+    "subnet2AvailabilityZone": {
+      "Type": "String"
     }
   },
 
@@ -77,6 +83,23 @@
         "RouteTableId": { "Ref": "routeTable" },
         "SubnetId": { "Ref": "subnet1" }
       }
+    },
+
+    "subnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "vpc"},
+        "CidrBlock": { "Ref": "subnet2CidrBlock" },
+        "AvailabilityZone": { "Ref": "subnet2AvailabilityZone" }
+      }
+    },
+
+    "subnet2RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": { "Ref": "routeTable" },
+        "SubnetId": { "Ref": "subnet2" }
+      }
     }
 
   },
@@ -87,6 +110,9 @@
     },
     "subnet1Id": {
       "Value": { "Ref": "subnet1" }
+    },
+    "subnet2Id": {
+      "Value": { "Ref": "subnet2" }
     }
   }
 }

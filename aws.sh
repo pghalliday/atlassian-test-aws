@@ -35,8 +35,20 @@ else
     "ParameterValue": "'$AT_DOMAIN'",
     "UsePreviousValue": false
   }, {
+    "ParameterKey": "dbUsername",
+    "ParameterValue": "'$AT_DB_USERNAME'",
+    "UsePreviousValue": false
+  }, {
+    "ParameterKey": "dbPassword",
+    "ParameterValue": "'$AT_DB_PASSWORD'",
+    "UsePreviousValue": false
+  }, {
     "ParameterKey": "availabilityZone1",
     "ParameterValue": "'$AT_AVAILABILITY_ZONE_1'",
+    "UsePreviousValue": false
+  }, {
+    "ParameterKey": "availabilityZone2",
+    "ParameterValue": "'$AT_AVAILABILITY_ZONE_2'",
     "UsePreviousValue": false
   }]'
 fi

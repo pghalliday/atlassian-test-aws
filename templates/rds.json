@@ -1,0 +1,66 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "RDS instance",
+
+  "Parameters": {
+    "subnet1Id": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "subnet2Id": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "username": {
+      "Type": "String"
+    },
+    "password": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "dbSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "DB Subnets",
+        "SubnetIds": [ { "Ref": "subnet1Id" }, { "Ref": "subnet2Id" } ]
+      }
+    },
+
+    "dbInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": "100",
+        "AllowMajorVersionUpgrade": true,
+        "AutoMinorVersionUpgrade": true,
+        "DBInstanceClass": "db.t2.micro",
+        "DBSubnetGroupName": { "Ref": "dbSubnetGroup" },
+        "Engine": "postgres",
+        "EngineVersion": "9.3.6",
+        "Iops": "1000",
+        "MasterUsername": { "Ref": "username" },
+        "MasterUserPassword": { "Ref": "password" },
+        "MultiAZ": true,
+        "PubliclyAccessible": false,
+        "StorageType": "io1"
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "endpointAddress": {
+      "Value": { "Fn::GetAtt": [ "dbInstance", "Endpoint.Address" ] }
+    },
+    "endpointPort": {
+      "Value": { "Fn::GetAtt": [ "dbInstance", "Endpoint.Port" ] }
+    }
+  }
+}
