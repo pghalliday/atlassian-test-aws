@@ -143,7 +143,7 @@ end
 postgresql_database_user crowd_database_user do
   connection postgresql_connection_info
   database_name crowd_database
-  privileges [ :all ]
+  privileges [:all]
   action :grant
 end
 
@@ -161,12 +161,12 @@ end
 postgresql_database_user crowdid_database_user do
   connection postgresql_connection_info
   database_name crowdid_database
-  privileges [ :all ]
+  privileges [:all]
   action :grant
 end
 
-template '/etc/init.d/crowd' do
-  source 'crowd.init.d.erb'
+template '/etc/init/crowd.conf' do
+  source 'crowd.conf.erb'
   variables(
     user: crowd_user,
     install_dir: crowd_install_dir
@@ -174,6 +174,7 @@ template '/etc/init.d/crowd' do
 end
 
 service 'crowd' do
-  supports restart: true, reload: false, status: false
+  provider Chef::Provider::Service::Upstart
+  supports restart: true, reload: true, status: true
   action [ :enable, :start ]
 end

@@ -162,6 +162,17 @@
       }
     },
 
+    "crowd": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
+        "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
     "reverseProxy": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -176,17 +187,6 @@
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
           "stashSubDomain" : { "Ref": "stashSubDomain" },
           "bambooSubDomain" : { "Ref": "bambooSubDomain" },
-          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
-        }
-      }
-    },
-
-    "crowd": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
-        "Parameters": {
-          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }
