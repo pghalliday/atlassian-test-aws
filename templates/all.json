@@ -108,6 +108,7 @@
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/rds.json" ] ] },
         "Parameters": {
+          "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "subnet1Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "subnet2Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet2Id" ] },
           "username": { "Ref": "dbUsername" },
@@ -185,6 +186,7 @@
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
         "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }

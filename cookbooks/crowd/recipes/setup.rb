@@ -129,15 +129,26 @@ end
 
 include_recipe 'database::postgresql'
 
+postgresql_database crowd_database do
+  connection postgresql_connection_info
+  action :create
+end
+
 postgresql_database_user crowd_database_user do
   connection postgresql_connection_info
   password crowd_database_password
   action :create
 end
 
-postgresql_database crowd_database do
+postgresql_database_user crowd_database_user do
   connection postgresql_connection_info
-  owner crowd_database_user
+  database_name crowd_database
+  privileges [ :all ]
+  action :grant
+end
+
+postgresql_database crowdid_database do
+  connection postgresql_connection_info
   action :create
 end
 
@@ -147,10 +158,11 @@ postgresql_database_user crowdid_database_user do
   action :create
 end
 
-postgresql_database crowdid_database do
+postgresql_database_user crowdid_database_user do
   connection postgresql_connection_info
-  owner crowdid_database_user
-  action :create
+  database_name crowdid_database
+  privileges [ :all ]
+  action :grant
 end
 
 template '/etc/init.d/crowd' do

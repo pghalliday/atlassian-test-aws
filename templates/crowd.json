@@ -6,6 +6,9 @@
   "Parameters": {
     "stackId": {
       "Type": "String"
+    },
+    "dbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id"
     }
   },
 
@@ -30,11 +33,12 @@
         "Name": "crowd",
         "Shortname": "crowd",
         "StackId": { "Ref": "stackId" },
-        "Type": "custom"
+        "Type": "custom",
+        "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
       }
     },
 
-    "instance2": {
+    "instance": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.micro",

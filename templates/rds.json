@@ -4,6 +4,9 @@
   "Description": "RDS instance",
 
   "Parameters": {
+    "vpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
     "subnet1Id": {
       "Type": "AWS::EC2::Subnet::Id"
     },
@@ -25,6 +28,28 @@
   },
 
   "Resources": {
+
+    "usersSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Database users",
+        "VpcId": { "Ref": "vpcId" }
+      }
+    },
+
+    "securityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Database",
+        "VpcId": { "Ref": "vpcId" },
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "5432",
+          "ToPort": "5432",
+          "SourceSecurityGroupId": { "Ref": "usersSecurityGroup" }
+        }]
+      }
+    },
 
     "dbSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
@@ -49,13 +74,17 @@
         "MasterUserPassword": { "Ref": "password" },
         "MultiAZ": true,
         "PubliclyAccessible": false,
-        "StorageType": "io1"
+        "StorageType": "io1",
+        "VPCSecurityGroups": [ { "Ref": "securityGroup" } ]
       }
     }
 
   },
 
   "Outputs": {
+    "usersSecurityGroup": {
+      "Value": { "Ref": "usersSecurityGroup" }
+    },
     "endpointAddress": {
       "Value": { "Fn::GetAtt": [ "dbInstance", "Endpoint.Address" ] }
     },
