@@ -26,7 +26,8 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "crowd::setup" ]
+          "Setup": [ "crowd::setup" ],
+          "Configure": [ "crowd::configure" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
