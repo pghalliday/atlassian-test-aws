@@ -9,9 +9,8 @@ kill timeout 30
  
 env RUN_AS_USER=<%= @user %>
 env BASEDIR=<%= @install_dir %>/current
-env STASH_HOME=<%= @home %>
  
 script
     LOGFILE=$BASEDIR/logs/catalina.out.`date +%Y-%m-%d`.log
-    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-stash -fg" >> $LOGFILE 2>&1
+    exec su - $RUN_AS_USER -c "STASH_HOME=<%= @home %> $BASEDIR/bin/start-stash.sh -fg" >> $LOGFILE 2>&1
 end script
