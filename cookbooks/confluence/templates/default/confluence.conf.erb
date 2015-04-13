@@ -12,5 +12,5 @@ env BASEDIR=<%= @install_dir %>/current
  
 script
     LOGFILE=$BASEDIR/logs/catalina.out.`date +%Y-%m-%d`.log
-    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-confluence -fg" >> $LOGFILE 2>&1
+    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-confluence.sh -fg" >> $LOGFILE 2>&1
 end script
