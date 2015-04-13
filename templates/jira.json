@@ -1,0 +1,54 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "JIRA instance",
+
+  "Parameters": {
+    "stackId": {
+      "Type": "String"
+    },
+    "dbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "layer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "AutoAssignElasticIps": false,
+        "AutoAssignPublicIps": true,
+        "CustomRecipes": {
+          "Setup": [ "jira::setup" ]
+        },
+        "EnableAutoHealing": true,
+        "InstallUpdatesOnBoot": true,
+        "Name": "jira",
+        "Shortname": "jira",
+        "StackId": { "Ref": "stackId" },
+        "Type": "custom",
+        "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
+      }
+    },
+
+    "instance2": {
+      "Type": "AWS::OpsWorks::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "LayerIds": [ { "Ref": "layer" } ],
+        "StackId": { "Ref": "stackId" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+  }
+}

@@ -55,6 +55,10 @@
       "Type": "Number",
       "Default": "8080"
     },
+    "jiraRedirectPort": {
+      "Type": "Number",
+      "Default": "8443"
+    },
     "confluenceSubDomain": {
       "Type": "String",
       "Default": "confluence"
@@ -144,6 +148,7 @@
           "crowdRedirectPort": { "Ref": "crowdRedirectPort" },
           "jiraSubDomain" : { "Ref": "jiraSubDomain" },
           "jiraPort": { "Ref": "jiraPort" },
+          "jiraRedirectPort": { "Ref": "jiraRedirectPort" },
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
           "confluencePort": { "Ref": "confluencePort" },
           "stashSubDomain" : { "Ref": "stashSubDomain" },
@@ -166,6 +171,17 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
+        "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
+    "jira": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/jira.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }

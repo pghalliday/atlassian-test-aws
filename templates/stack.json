@@ -40,6 +40,9 @@
     "jiraPort": {
       "Type": "Number"
     },
+    "jiraRedirectPort": {
+      "Type": "Number"
+    },
     "confluenceSubDomain": {
       "Type": "String"
     },
@@ -125,7 +128,8 @@
             },
             "jira": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" } ] ] },
-              "port": { "Ref": "jiraPort" }
+              "port": { "Ref": "jiraPort" },
+              "redirect_port": { "Ref": "jiraRedirectPort" }
             },
             "confluence": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
