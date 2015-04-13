@@ -49,16 +49,25 @@
     "confluencePort": {
       "Type": "Number"
     },
+    "confluenceRedirectPort": {
+      "Type": "Number"
+    },
     "stashSubDomain": {
       "Type": "String"
     },
     "stashPort": {
       "Type": "Number"
     },
+    "stashRedirectPort": {
+      "Type": "Number"
+    },
     "bambooSubDomain": {
       "Type": "String"
     },
     "bambooPort": {
+      "Type": "Number"
+    },
+    "bambooRedirectPort": {
       "Type": "Number"
     },
     "s3AccessKeyId": {
@@ -133,15 +142,18 @@
             },
             "confluence": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
-              "port": { "Ref": "confluencePort" }
+              "port": { "Ref": "confluencePort" },
+              "redirect_port": { "Ref": "confluenceRedirectPort" }
             },
             "stash": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
-              "port": { "Ref": "stashPort" }
+              "port": { "Ref": "stashPort" },
+              "redirect_port": { "Ref": "stashRedirectPort" }
             },
             "bamboo": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" } ] ] },
-              "port": { "Ref": "bambooPort" }
+              "port": { "Ref": "bambooPort" },
+              "redirect_port": { "Ref": "bambooRedirectPort" }
             }
           }
         },

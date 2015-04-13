@@ -1,6 +1,6 @@
-# jira
+# stash
  
-description     "Atlassian Jira - Bug and issues tracking"
+description     "Atlassian Stash - Git server"
  
 start on runlevel [2345]
 stop on runlevel [!2345]
@@ -9,9 +9,9 @@ kill timeout 30
  
 env RUN_AS_USER=<%= @user %>
 env BASEDIR=<%= @install_dir %>/current
-env JIRA_HOME=<%= @home %>
+env STASH_HOME=<%= @home %>
  
 script
     LOGFILE=$BASEDIR/logs/catalina.out.`date +%Y-%m-%d`.log
-    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-jira.sh -fg" >> $LOGFILE 2>&1
+    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-stash -fg" >> $LOGFILE 2>&1
 end script

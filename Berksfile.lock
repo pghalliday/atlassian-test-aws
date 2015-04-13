@@ -1,6 +1,8 @@
 DEPENDENCIES
   bamboo
     path: cookbooks/bamboo
+  confluence
+    path: cookbooks/confluence
   crowd
     path: cookbooks/crowd
   jira
@@ -16,6 +18,9 @@ GRAPH
     java (>= 0.0.0)
   build-essential (2.2.2)
   chef-sugar (3.1.0)
+  confluence (0.1.0)
+    database (>= 0.0.0)
+    java (>= 0.0.0)
   crowd (0.1.0)
     database (>= 0.0.0)
     java (>= 0.0.0)
@@ -34,3 +39,5 @@ GRAPH
   reverse-proxy (0.1.0)
     apt (>= 0.0.0)
   stash (0.1.0)
+    database (>= 0.0.0)
+    java (>= 0.0.0)

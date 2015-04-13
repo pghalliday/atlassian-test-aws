@@ -42,7 +42,7 @@
     "instance": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
-        "InstanceType": "t2.micro",
+        "InstanceType": "t2.small",
         "LayerIds": [ { "Ref": "layer" } ],
         "StackId": { "Ref": "stackId" }
       }

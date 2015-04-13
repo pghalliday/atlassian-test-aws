@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "JIRA instance",
+  "Description": "Stash instance",
 
   "Parameters": {
     "stackId": {
@@ -26,12 +26,12 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "jira::setup" ]
+          "Setup": [ "stash::setup" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "jira",
-        "Shortname": "jira",
+        "Name": "stash",
+        "Shortname": "stash",
         "StackId": { "Ref": "stackId" },
         "Type": "custom",
         "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]

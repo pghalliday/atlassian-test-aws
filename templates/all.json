@@ -67,6 +67,10 @@
       "Type": "Number",
       "Default": "8090"
     },
+    "confluenceRedirectPort": {
+      "Type": "Number",
+      "Default": "8443"
+    },
     "stashSubDomain": {
       "Type": "String",
       "Default": "stash"
@@ -75,6 +79,10 @@
       "Type": "Number",
       "Default": "7990"
     },
+    "stashRedirectPort": {
+      "Type": "Number",
+      "Default": "8443"
+    },
     "bambooSubDomain": {
       "Type": "String",
       "Default": "bamboo"
@@ -82,6 +90,10 @@
     "bambooPort": {
       "Type": "Number",
       "Default": "8085"
+    },
+    "bambooRedirectPort": {
+      "Type": "Number",
+      "Default": "8443"
     }
   },
 
@@ -151,10 +163,13 @@
           "jiraRedirectPort": { "Ref": "jiraRedirectPort" },
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
           "confluencePort": { "Ref": "confluencePort" },
+          "confluenceRedirectPort": { "Ref": "confluenceRedirectPort" },
           "stashSubDomain" : { "Ref": "stashSubDomain" },
           "stashPort": { "Ref": "stashPort" },
+          "stashRedirectPort": { "Ref": "stashRedirectPort" },
           "bambooSubDomain" : { "Ref": "bambooSubDomain" },
           "bambooPort": { "Ref": "bambooPort" },
+          "bambooRedirectPort": { "Ref": "bambooRedirectPort" },
           "dbEndpointAddress": { "Fn::GetAtt": [ "rds", "Outputs.endpointAddress" ] },
           "dbEndpointPort": { "Fn::GetAtt": [ "rds", "Outputs.endpointPort" ] },
           "dbUsername": { "Ref": "dbUsername" },
@@ -182,6 +197,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/jira.json" ] ] },
+        "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
+    "confluence": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/confluence.json" ] ] },
+        "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
+    "stash": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/stash.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }

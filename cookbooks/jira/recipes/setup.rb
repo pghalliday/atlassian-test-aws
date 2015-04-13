@@ -74,14 +74,6 @@ bash 'install jira' do
   notifies :restart, 'service[jira]', :delayed
 end
 
-template ::File.join(jira_install_dir, 'current/atlassian-jira/WEB-INF/classes/jira-application.properties') do
-  source 'jira-application.properties.erb'
-  variables(
-    home: jira_home
-  )
-  notifies :restart, 'service[jira]', :delayed
-end
-
 template ::File.join(jira_install_dir, 'current/conf/server.xml') do
   source 'server.xml.erb'
   variables(
@@ -133,7 +125,8 @@ template '/etc/init/jira.conf' do
   source 'jira.conf.erb'
   variables(
     user: jira_user,
-    install_dir: jira_install_dir
+    install_dir: jira_install_dir,
+    home: jira_home
   )
   notifies :restart, 'service[jira]', :delayed
 end
