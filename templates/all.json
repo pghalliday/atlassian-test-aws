@@ -226,6 +226,17 @@
       }
     },
 
+    "bamboo": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/bamboo.json" ] ] },
+        "Parameters": {
+          "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
+          "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
+        }
+      }
+    },
+
     "reverseProxy": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {

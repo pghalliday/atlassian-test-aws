@@ -1,0 +1,54 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Bamboo instance",
+
+  "Parameters": {
+    "stackId": {
+      "Type": "String"
+    },
+    "dbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "layer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "AutoAssignElasticIps": false,
+        "AutoAssignPublicIps": true,
+        "CustomRecipes": {
+          "Setup": [ "bamboo::setup" ]
+        },
+        "EnableAutoHealing": true,
+        "InstallUpdatesOnBoot": true,
+        "Name": "bamboo",
+        "Shortname": "bamboo",
+        "StackId": { "Ref": "stackId" },
+        "Type": "custom",
+        "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
+      }
+    },
+
+    "instance": {
+      "Type": "AWS::OpsWorks::Instance",
+      "Properties": {
+        "InstanceType": "t2.small",
+        "LayerIds": [ { "Ref": "layer" } ],
+        "StackId": { "Ref": "stackId" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+  }
+}

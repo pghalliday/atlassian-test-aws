@@ -1,0 +1,17 @@
+# bamboo
+ 
+description     "Atlassian Bamboo - continuous integration server"
+ 
+start on runlevel [2345]
+stop on runlevel [!2345]
+ 
+kill timeout 30
+ 
+env RUN_AS_USER=<%= @user %>
+env BASEDIR=<%= @install_dir %>/current
+env BAMBOO_HOME=<%= @home %>
+ 
+script
+    LOGFILE=$BASEDIR/logs/catalina.out.`date +%Y-%m-%d`.log
+    exec su - $RUN_AS_USER -c "$BASEDIR/bin/start-bamboo -fg" >> $LOGFILE 2>&1
+end script
