@@ -15,6 +15,7 @@ DEPENDENCIES
 GRAPH
   apt (2.7.0)
   bamboo (0.1.0)
+    database (>= 0.0.0)
     java (>= 0.0.0)
   build-essential (2.2.2)
   chef-sugar (3.1.0)
