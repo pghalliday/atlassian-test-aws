@@ -33,6 +33,9 @@ postgresql_connection_info = {
   password: node['atlassian-test']['database']['password']
 }
 
+include_recipe 'jira::service'
+include_recipe 'jira::backup'
+
 node.override['java']['jdk_version'] = '7'
 include_recipe 'java::default'
 
@@ -132,9 +135,6 @@ template '/etc/init/jira.conf' do
   )
   notifies :restart, 'service[jira]', :delayed
 end
-
-include_recipe 'jira::service'
-include_recipe 'jira::backup'
 
 bash 'noop' do
   command '/bin/true'

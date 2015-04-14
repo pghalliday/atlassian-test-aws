@@ -26,6 +26,9 @@ postgresql_connection_info = {
   password: node['atlassian-test']['database']['password']
 }
 
+include_recipe 'bamboo::service'
+include_recipe 'bamboo::backup'
+
 node.override['java']['jdk_version'] = '7'
 include_recipe 'java::default'
 
@@ -109,9 +112,6 @@ template '/etc/init/bamboo.conf' do
   )
   notifies :restart, 'service[bamboo]', :delayed
 end
-
-include_recipe 'bamboo::service'
-include_recipe 'bamboo::backup'
 
 bash 'noop' do
   command '/bin/true'

@@ -26,6 +26,9 @@ postgresql_connection_info = {
   password: node['atlassian-test']['database']['password']
 }
 
+include_recipe 'confluence::service'
+include_recipe 'confluence::backup'
+
 node.override['java']['jdk_version'] = '7'
 node.override['java']['install_flavor'] = 'oracle'
 node.override['java']['oracle']['accept_oracle_download_terms'] = true
@@ -118,9 +121,6 @@ template '/etc/init/confluence.conf' do
   )
   notifies :restart, 'service[confluence]', :delayed
 end
-
-include_recipe 'confluence::service'
-include_recipe 'confluence::backup'
 
 bash 'noop' do
   command '/bin/true'

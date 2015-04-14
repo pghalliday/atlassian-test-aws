@@ -32,6 +32,9 @@ postgresql_connection_info = {
   password: node['atlassian-test']['database']['password']
 }
 
+include_recipe 'crowd::service'
+include_recipe 'crowd::backup'
+
 node.override['java']['jdk_version'] = '7'
 include_recipe 'java::default'
 
@@ -175,9 +178,6 @@ template '/etc/init/crowd.conf' do
     install_dir: crowd_install_dir
   )
 end
-
-include_recipe 'crowd::service'
-include_recipe 'crowd::backup'
 
 bash 'noop' do
   command '/bin/true'

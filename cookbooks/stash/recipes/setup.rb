@@ -26,6 +26,9 @@ postgresql_connection_info = {
   password: node['atlassian-test']['database']['password']
 }
 
+include_recipe 'stash::service'
+include_recipe 'stash::backup'
+
 node.override['java']['jdk_version'] = '7'
 include_recipe 'java::default'
 
@@ -112,9 +115,6 @@ template '/etc/init/stash.conf' do
   )
   notifies :restart, 'service[stash]', :delayed
 end
-
-include_recipe 'stash::service'
-include_recipe 'stash::backup'
 
 bash 'noop' do
   command '/bin/true'

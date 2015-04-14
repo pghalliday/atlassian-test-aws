@@ -29,36 +29,36 @@ def commands
 
   aws_list_command = "AWS_ACCESS_KEY_ID=#{s3_access_key_id} AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key} aws s3 ls #{s3_path}"
 
-  {
-    backup: "#{home_tarball_command} | #{aws_upload_home_command}",
-    restore: "#{aws_download_home_command} | #{home_extract_command}",
-    list: aws_list_command
-  }
+  cmds = {}
+  cmds['backup'] = "#{home_tarball_command} | #{aws_upload_home_command}"
+  cmds['restore'] = "#{aws_download_home_command} | #{home_extract_command}"
+  cmds['list'] = aws_list_command
+  return cmds
 end
 
 action :enable do
-  cron "backup to #{new_resource.s3_path}" do
-    time :midnight
+  cron "backup to #{s3_home_tarball_path}" do
+    hour '0'
+    minute '0'
     user new_resource.user
     command commands['backup']
   end
 end
 
 action :backup do
-  bash "backup to #{new_resource.s3_path}" do
+  bash "backup to #{s3_home_tarball_path}" do
     user new_resource.user
-    command commands['backup']
+    code commands['backup']
   end
 end
 
 action :restore do
-  user = new_resource.user
-  list_command = Mixlib::ShellOut.new(commands['list'], user: user)
+  list_command = Mixlib::ShellOut.new(commands['list'])
   list_command.run_command()
   backup_files = list_command.stdout
-  bash "backup to #{new_resource.s3_path}" do
-    user user
-    command commands['restore']
+  bash "restore from #{s3_home_tarball_path}" do
+    user new_resource.user
+    code commands['restore']
     only_if { !(/ #{s3_home_tarball_file}$/ =~ backup_files).nil? }
   end
 end
