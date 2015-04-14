@@ -115,5 +115,8 @@ end
 
 bash 'noop' do
   command '/bin/true'
+  notifies :enable, 'backup_database[bamboo]', :immediately
+  notifies :enable, 'backup_home[bamboo]', :immediately
+  notifies :enable, 'service[bamboo]', :immediately
   notifies :start, 'service[bamboo]', :immediately
 end

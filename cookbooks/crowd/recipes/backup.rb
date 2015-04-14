@@ -25,6 +25,7 @@ backup_database 'crowd' do
   db_password crowd_database_password
   db_host db_host
   db_port db_port
+  action :nothing
 end
 
 backup_database 'crowdid' do
@@ -36,6 +37,7 @@ backup_database 'crowdid' do
   db_password crowdid_database_password
   db_host db_host
   db_port db_port
+  action :nothing
 end
 
 backup_home 'crowd' do
@@ -44,4 +46,5 @@ backup_home 'crowd' do
   s3_bucket backup_bucket_name 
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
+  action :nothing
 end

@@ -118,5 +118,8 @@ end
 
 bash 'noop' do
   command '/bin/true'
+  notifies :enable, 'backup_home[stash]', :immediately
+  notifies :enable, 'backup_database[stash]', :immediately
+  notifies :enable, 'service[stash]', :immediately
   notifies :start, 'service[stash]', :immediately
 end

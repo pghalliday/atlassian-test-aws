@@ -181,5 +181,9 @@ end
 
 bash 'noop' do
   command '/bin/true'
+  notifies :enable, 'backup_home[crowd]', :immediately
+  notifies :enable, 'backup_database[crowd]', :immediately
+  notifies :enable, 'backup_database[crowdid]', :immediately
+  notifies :enable, 'service[crowd]', :immediately
   notifies :start, 'service[crowd]', :immediately
 end

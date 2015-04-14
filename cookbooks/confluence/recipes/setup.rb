@@ -124,5 +124,8 @@ end
 
 bash 'noop' do
   command '/bin/true'
+  notifies :enable, 'backup_database[confluence]', :immediately
+  notifies :enable, 'backup_home[confluence]', :immediately
+  notifies :enable, 'service[confluence]', :immediately
   notifies :start, 'service[confluence]', :immediately
 end

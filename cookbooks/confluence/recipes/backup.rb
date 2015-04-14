@@ -22,6 +22,7 @@ backup_database 'confluence' do
   db_password confluence_database_password
   db_host db_host
   db_port db_port
+  action :nothing
 end
 
 backup_home 'confluence' do
@@ -30,4 +31,5 @@ backup_home 'confluence' do
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
+  action :nothing
 end

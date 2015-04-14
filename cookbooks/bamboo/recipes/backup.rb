@@ -22,6 +22,7 @@ backup_database 'bamboo' do
   db_password bamboo_database_password
   db_host db_host
   db_port db_port
+  action :nothing
 end
 
 backup_home 'bamboo' do
@@ -30,4 +31,5 @@ backup_home 'bamboo' do
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
+  action :nothing
 end
