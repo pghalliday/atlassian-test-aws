@@ -31,6 +31,10 @@ else
     "ParameterValue": "'$AT_BUCKET_NAME'",
     "UsePreviousValue": false
   }, {
+    "ParameterKey": "backupBucketName",
+    "ParameterValue": "'$AT_BACKUP_BUCKET_NAME'",
+    "UsePreviousValue": false
+  }, {
     "ParameterKey": "domain",
     "ParameterValue": "'$AT_DOMAIN'",
     "UsePreviousValue": false

@@ -49,6 +49,7 @@ user jira_user do
   home jira_home
   system true
   gid jira_group
+  notifies :restore, 'backup_home[jira]', :immediately
 end
 
 directory jira_install_dir do
@@ -119,6 +120,7 @@ postgresql_database_user jira_database_user do
   database_name jira_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[jira]', :immediately
 end
 
 template '/etc/init/jira.conf' do
@@ -131,8 +133,10 @@ template '/etc/init/jira.conf' do
   notifies :restart, 'service[jira]', :delayed
 end
 
-service 'jira' do
-  provider Chef::Provider::Service::Upstart
-  supports restart: true, reload: true, status: true
-  action [ :enable, :start ]
+include_recipe 'jira::service'
+include_recipe 'jira::backup'
+
+bash 'noop' do
+  command '/bin/true'
+  notifies :start, 'service[jira]', :immediately
 end

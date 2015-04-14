@@ -26,7 +26,8 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "stash::setup" ]
+          "Setup": [ "stash::setup" ],
+          "Shutdown": [ "stash::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,

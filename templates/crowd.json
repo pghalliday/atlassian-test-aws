@@ -27,6 +27,7 @@
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
           "Setup": [ "crowd::setup" ],
+          "Shutdown": [ "crowd::shutdown" ],
           "Configure": [ "crowd::configure" ]
         },
         "EnableAutoHealing": true,

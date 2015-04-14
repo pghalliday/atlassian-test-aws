@@ -44,6 +44,7 @@ user confluence_user do
   home confluence_home
   system true
   gid confluence_group
+  notifies :restore, 'backup_home[confluence]', :immediately
 end
 
 directory confluence_install_dir do
@@ -106,6 +107,7 @@ postgresql_database_user confluence_database_user do
   database_name confluence_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[confluence]', :immediately
 end
 
 template '/etc/init/confluence.conf' do
@@ -117,8 +119,10 @@ template '/etc/init/confluence.conf' do
   notifies :restart, 'service[confluence]', :delayed
 end
 
-service 'confluence' do
-  provider Chef::Provider::Service::Upstart
-  supports restart: true, reload: true, status: true
-  action [ :enable, :start ]
+include_recipe 'confluence::service'
+include_recipe 'confluence::backup'
+
+bash 'noop' do
+  command '/bin/true'
+  notifies :start, 'service[confluence]', :immediately
 end

@@ -6,6 +6,9 @@
   "Parameters": {
     "bucketName": {
       "Type": "String"
+    },
+    "backupBucketName": {
+      "Type": "String"
     }
   },
 
@@ -29,6 +32,10 @@
               "Effect": "Allow",
               "Action": "s3:GetObject",
               "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "bucketName" }, "/*" ] ] }
+            }, {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "backupBucketName" }, "/*" ] ] }
             }]
           }
         }]

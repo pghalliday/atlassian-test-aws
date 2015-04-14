@@ -48,6 +48,7 @@ user crowd_user do
   home crowd_home
   system true
   gid crowd_group
+  notifies :restore, 'backup_home[crowd]', :immediately
 end
 
 directory crowd_install_dir do
@@ -145,6 +146,7 @@ postgresql_database_user crowd_database_user do
   database_name crowd_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[crowd]', :immediately
 end
 
 postgresql_database crowdid_database do
@@ -163,6 +165,7 @@ postgresql_database_user crowdid_database_user do
   database_name crowdid_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[crowdid]', :immediately
 end
 
 template '/etc/init/crowd.conf' do
@@ -173,8 +176,10 @@ template '/etc/init/crowd.conf' do
   )
 end
 
-service 'crowd' do
-  provider Chef::Provider::Service::Upstart
-  supports restart: true, reload: true, status: true
-  action [ :enable, :start ]
+include_recipe 'crowd::service'
+include_recipe 'crowd::backup'
+
+bash 'noop' do
+  command '/bin/true'
+  notifies :start, 'service[crowd]', :immediately
 end

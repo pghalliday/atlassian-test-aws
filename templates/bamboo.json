@@ -26,7 +26,8 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "bamboo::setup" ]
+          "Setup": [ "bamboo::setup" ],
+          "Shutdown": [ "bamboo::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
@@ -38,7 +39,7 @@
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",

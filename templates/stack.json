@@ -10,6 +10,9 @@
     "bucketName": {
       "Type": "String"
     },
+    "backupBucketName": {
+      "Type": "String"
+    },
     "keyName": {
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
@@ -119,6 +122,11 @@
         },
         "CustomJson": {
           "atlassian-test": {
+            "s3": {
+              "access_key_id": { "Ref": "s3AccessKeyId" },
+              "secret_access_key": { "Ref": "s3SecretAccessKey" },
+              "backup_bucket_name": { "Ref": "backupBucketName" }
+            },
             "database": {
               "address": { "Ref": "dbEndpointAddress" },
               "port": { "Ref": "dbEndpointPort" },

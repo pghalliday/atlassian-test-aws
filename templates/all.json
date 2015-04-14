@@ -7,6 +7,9 @@
     "bucketName": {
       "Type": "String"
     },
+    "backupBucketName": {
+      "Type": "String"
+    },
     "availabilityZone1": {
       "Type": "String"
     },
@@ -138,7 +141,8 @@
       "Properties": {
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/s3-user.json" ] ] },
         "Parameters": {
-          "bucketName": { "Ref": "bucketName" }
+          "bucketName": { "Ref": "bucketName" },
+          "backupBucketName": { "Ref": "backupBucketName" }
         }
       }
     },
@@ -150,6 +154,7 @@
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "bucketName": { "Ref": "bucketName" },
+          "backupBucketName": { "Ref": "backupBucketName" },
           "keyName": { "Ref": "keyName" },
           "availabilityZone": { "Ref": "availabilityZone1" },
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },

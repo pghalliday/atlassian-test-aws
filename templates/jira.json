@@ -26,7 +26,8 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "jira::setup" ]
+          "Setup": [ "jira::setup" ],
+          "Shutdown": [ "jira::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,

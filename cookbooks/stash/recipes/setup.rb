@@ -45,6 +45,7 @@ user stash_user do
   home stash_home
   system true
   gid stash_group
+  notifies :restore, 'backup_home[stash]', :immediately
 end
 
 directory stash_install_dir do
@@ -99,6 +100,7 @@ postgresql_database_user stash_database_user do
   database_name stash_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[stash]', :immediately
 end
 
 template '/etc/init/stash.conf' do
@@ -111,8 +113,10 @@ template '/etc/init/stash.conf' do
   notifies :restart, 'service[stash]', :delayed
 end
 
-service 'stash' do
-  provider Chef::Provider::Service::Upstart
-  supports restart: true, reload: true, status: true
-  action [ :enable, :start ]
+include_recipe 'stash::service'
+include_recipe 'stash::backup'
+
+bash 'noop' do
+  command '/bin/true'
+  notifies :start, 'service[stash]', :immediately
 end

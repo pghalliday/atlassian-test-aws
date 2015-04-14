@@ -42,6 +42,7 @@ user bamboo_user do
   home bamboo_home
   system true
   gid bamboo_group
+  notifies :restore, 'backup_home[bamboo]', :immediately
 end
 
 directory bamboo_install_dir do
@@ -96,6 +97,7 @@ postgresql_database_user bamboo_database_user do
   database_name bamboo_database
   privileges [:all]
   action :grant
+  notifies :restore, 'backup_database[bamboo]', :immediately
 end
 
 template '/etc/init/bamboo.conf' do
@@ -108,8 +110,10 @@ template '/etc/init/bamboo.conf' do
   notifies :restart, 'service[bamboo]', :delayed
 end
 
-service 'bamboo' do
-  provider Chef::Provider::Service::Upstart
-  supports restart: true, reload: true, status: true
-  action [ :enable, :start ]
+include_recipe 'bamboo::service'
+include_recipe 'bamboo::backup'
+
+bash 'noop' do
+  command '/bin/true'
+  notifies :start, 'service[bamboo]', :immediately
 end
