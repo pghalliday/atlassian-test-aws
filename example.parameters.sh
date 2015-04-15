@@ -3,6 +3,7 @@
 export AT_BUCKET_NAME="mybucket"
 export AT_BACKUP_BUCKET_NAME="mybucket-backup"
 export AT_KEY_PAIR="mykeypair"
+export AT_HOSTED_ZONE_ID="Z14HJMYZONEID"
 export AT_DOMAIN="my.hosted.zone"
 export AT_DB_USERNAME="root"
 export AT_DB_PASSWORD="root1234"

@@ -1,4 +1,4 @@
-layer = node['opsworks']['layers']['nginx']
+layer = node['opsworks']['layers']['reverse-proxy']
 if layer
   instance = layer['instances'].first
   if instance

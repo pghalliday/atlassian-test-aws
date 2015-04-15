@@ -35,6 +35,10 @@ else
     "ParameterValue": "'$AT_BACKUP_BUCKET_NAME'",
     "UsePreviousValue": false
   }, {
+    "ParameterKey": "hostedZoneId",
+    "ParameterValue": "'$AT_HOSTED_ZONE_ID'",
+    "UsePreviousValue": false
+  }, {
     "ParameterKey": "domain",
     "ParameterValue": "'$AT_DOMAIN'",
     "UsePreviousValue": false

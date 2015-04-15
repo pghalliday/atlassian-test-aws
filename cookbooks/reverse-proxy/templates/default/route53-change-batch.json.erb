@@ -1,0 +1,53 @@
+{
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "<%= @crowd %>.",
+      "Type": "A",
+      "TTL": 900,
+      "ResourceRecords": [{
+        "Value": "<%= @ip %>"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "<%= @jira %>.",
+      "Type": "A",
+      "TTL": 900,
+      "ResourceRecords": [{
+        "Value": "<%= @ip %>"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "<%= @confluence %>.",
+      "Type": "A",
+      "TTL": 900,
+      "ResourceRecords": [{
+        "Value": "<%= @ip %>"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "<%= @stash %>.",
+      "Type": "A",
+      "TTL": 900,
+      "ResourceRecords": [{
+        "Value": "<%= @ip %>"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "<%= @bamboo %>.",
+      "Type": "A",
+      "TTL": 900,
+      "ResourceRecords": [{
+        "Value": "<%= @ip %>"
+      }]
+    }
+  }]
+}

@@ -31,12 +31,19 @@
     "gmailPassword": {
       "Type": "String"
     },
+    "hostedZoneId": {
+      "Type": "String"
+    },
     "domain": {
       "Type": "String"
     },
     "proxyPort": {
       "Type": "Number",
       "Default": "80"
+    },
+    "stashSshPort": {
+      "Type": "Number",
+      "Default": "7999"
     },
     "crowdSubDomain": {
       "Type": "String",
@@ -147,6 +154,16 @@
       }
     },
 
+    "route53User": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/route53-user.json" ] ] },
+        "Parameters": {
+          "hostedZoneId": { "Ref": "hostedZoneId" }
+        }
+      }
+    },
+
     "stack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -171,6 +188,7 @@
           "confluenceRedirectPort": { "Ref": "confluenceRedirectPort" },
           "stashSubDomain" : { "Ref": "stashSubDomain" },
           "stashPort": { "Ref": "stashPort" },
+          "stashSshPort": { "Ref": "stashSshPort" },
           "stashRedirectPort": { "Ref": "stashRedirectPort" },
           "bambooSubDomain" : { "Ref": "bambooSubDomain" },
           "bambooPort": { "Ref": "bambooPort" },
@@ -182,7 +200,10 @@
           "gmailUsername": { "Ref": "gmailUsername" },
           "gmailPassword": { "Ref": "gmailPassword" },
           "s3AccessKeyId": { "Fn::GetAtt": [ "s3User", "Outputs.accessKeyId" ] },
-          "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] }
+          "s3SecretAccessKey": { "Fn::GetAtt": [ "s3User", "Outputs.secretAccessKey" ] },
+          "hostedZoneId": { "Ref": "hostedZoneId" },
+          "route53AccessKeyId": { "Fn::GetAtt": [ "route53User", "Outputs.accessKeyId" ] },
+          "route53SecretAccessKey": { "Fn::GetAtt": [ "route53User", "Outputs.secretAccessKey" ] }
         }
       }
     },
@@ -248,14 +269,8 @@
         "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/reverse-proxy.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
-          "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
-          "domain": { "Ref": "domain" },
           "proxyPort": { "Ref": "proxyPort" },
-          "crowdSubDomain" : { "Ref": "crowdSubDomain" },
-          "jiraSubDomain" : { "Ref": "jiraSubDomain" },
-          "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
-          "stashSubDomain" : { "Ref": "stashSubDomain" },
-          "bambooSubDomain" : { "Ref": "bambooSubDomain" },
+          "stashSshPort": { "Ref": "stashSshPort" },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
         }
       }

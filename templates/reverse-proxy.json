@@ -7,29 +7,11 @@
     "vpcId": {
       "Type": "AWS::EC2::VPC::Id"
     },
-    "subnetId": {
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "domain": {
-      "Type": "String"
-    },
     "proxyPort": {
       "Type": "Number"
     },
-    "crowdSubDomain": {
-      "Type": "String"
-    },
-    "jiraSubDomain": {
-      "Type": "String"
-    },
-    "confluenceSubDomain": {
-      "Type": "String"
-    },
-    "stashSubDomain": {
-      "Type": "String"
-    },
-    "bambooSubDomain": {
-      "Type": "String"
+    "stashSshPort": {
+      "Type": "Number"
     },
     "stackId": {
       "Type": "String"
@@ -47,13 +29,18 @@
     "securityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Port for the load balancer",
-        "SecurityGroupIngress": {
+        "GroupDescription": "Ports for the reverse proxies",
+        "SecurityGroupIngress": [{
           "CidrIp": "0.0.0.0/0",
           "FromPort": { "Ref": "proxyPort" },
           "IpProtocol": "tcp",
           "ToPort": { "Ref": "proxyPort" }
-        },
+        }, {
+          "CidrIp": "0.0.0.0/0",
+          "FromPort": { "Ref": "stashSshPort" },
+          "IpProtocol": "tcp",
+          "ToPort": { "Ref": "stashSshPort" }
+        }],
         "VpcId": { "Ref": "vpcId" }
       }
     },
@@ -67,76 +54,13 @@
           "Setup": [ "reverse-proxy::setup" ],
           "Configure": [ "reverse-proxy::configure" ]
         },
+        "CustomSecurityGroupIds": [ { "Ref": "securityGroup" } ],
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "nginx",
-        "Shortname": "nginx",
+        "Name": "reverse-proxy",
+        "Shortname": "reverse-proxy",
         "StackId": { "Ref": "stackId" },
         "Type": "custom"
-      }
-    },
-
-    "loadBalancer" : {
-      "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties" : {
-        "Subnets" : [ { "Ref": "subnetId" } ],
-        "Listeners" : [{
-          "LoadBalancerPort" : { "Ref": "proxyPort" },
-          "InstancePort" : { "Ref": "proxyPort" },
-          "Protocol" : "HTTP"
-        }],
-        "SecurityGroups": [ { "Ref": "securityGroup" } ]
-      }
-    },
-
-    "elasticLoadBalancerAttachment": {
-      "Type": "AWS::OpsWorks::ElasticLoadBalancerAttachment",
-      "Properties": {
-        "ElasticLoadBalancerName" : { "Ref": "loadBalancer" },
-        "LayerId" : { "Ref": "layer" }
-      }
-    },
-
-    "recordSetGroup" : {
-      "Type": "AWS::Route53::RecordSetGroup",
-      "Properties": {
-        "HostedZoneName": { "Fn::Join": [ "", [ { "Ref": "domain" }, "." ] ] },
-        "RecordSets": [{
-          "Name": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
-          "Type": "A",
-          "AliasTarget": {
-            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
-          }
-        }, {
-          "Name": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
-          "Type": "A",
-          "AliasTarget": {
-            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
-          }
-        }, {
-          "Name": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
-          "Type": "A",
-          "AliasTarget": {
-            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
-          }
-        }, {
-          "Name": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
-          "Type": "A",
-          "AliasTarget": {
-            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
-          }
-        }, {
-          "Name": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
-          "Type": "A",
-          "AliasTarget": {
-            "HostedZoneId": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneNameID" ] },
-            "DNSName": { "Fn::GetAtt" : [ "loadBalancer", "CanonicalHostedZoneName" ] }
-          }
-        }]
       }
     },
 

@@ -61,6 +61,9 @@
     "stashPort": {
       "Type": "Number"
     },
+    "stashSshPort": {
+      "Type": "Number"
+    },
     "stashRedirectPort": {
       "Type": "Number"
     },
@@ -77,6 +80,15 @@
       "Type": "String"
     },
     "s3SecretAccessKey": {
+      "Type": "String"
+    },
+    "hostedZoneId": {
+      "Type": "String"
+    },
+    "route53AccessKeyId": {
+      "Type": "String"
+    },
+    "route53SecretAccessKey": {
       "Type": "String"
     },
     "dbEndpointAddress": {
@@ -127,6 +139,11 @@
               "secret_access_key": { "Ref": "s3SecretAccessKey" },
               "backup_bucket_name": { "Ref": "backupBucketName" }
             },
+            "route53": {
+              "access_key_id": { "Ref": "route53AccessKeyId" },
+              "secret_access_key": { "Ref": "route53SecretAccessKey" },
+              "hosted_zone_id": { "Ref": "hostedZoneId" }
+            },
             "database": {
               "address": { "Ref": "dbEndpointAddress" },
               "port": { "Ref": "dbEndpointPort" },
@@ -138,6 +155,7 @@
               "password": { "Ref": "gmailPassword" }
             },
             "proxy_port": { "Ref": "proxyPort" },
+            "domain": { "Ref": "domain" },
             "crowd": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "crowdPort" },
@@ -156,6 +174,7 @@
             "stash": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "stashPort" },
+              "ssh_port": { "Ref": "stashSshPort" },
               "redirect_port": { "Ref": "stashRedirectPort" }
             },
             "bamboo": {

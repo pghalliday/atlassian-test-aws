@@ -1,4 +1,6 @@
 DEPENDENCIES
+  aws-cli
+    path: cookbooks/aws-cli
   backup
     path: cookbooks/backup
   bamboo
@@ -16,7 +18,9 @@ DEPENDENCIES
 
 GRAPH
   apt (2.7.0)
+  aws-cli (0.1.0)
   backup (0.1.0)
+    aws-cli (>= 0.0.0)
   bamboo (0.1.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
@@ -33,6 +37,7 @@ GRAPH
     java (>= 0.0.0)
   database (4.0.5)
     postgresql (>= 1.0.0)
+  iptables (1.0.0)
   java (1.31.0)
   jira (0.1.0)
     backup (>= 0.0.0)
@@ -46,6 +51,8 @@ GRAPH
     openssl (~> 4.0.0)
   reverse-proxy (0.1.0)
     apt (>= 0.0.0)
+    aws-cli (>= 0.0.0)
+    iptables (>= 0.0.0)
   stash (0.1.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)

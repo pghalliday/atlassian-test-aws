@@ -8,7 +8,7 @@
 - Create an EC2 key pair to associate with instances - `$AT_KEY_PAIR`
 - Create an IAM user with full administrator permissions
 - Choose a user name and password for the master database user - `$AT_DB_USERNAME`, `$AT_DB_PASSWORD` (the password must be at least 8 characters)
-- Add a Route53 hosted zone - `$AT_DOMAIN` (don't use the trailing dot in `parameters.sh`)
+- Add a Route53 hosted zone - `$AT_HOSTED_ZONE_ID` and `$AT_DOMAIN` (don't use the trailing dot in `parameters.sh`)
 - Configure an AWS profile with the keys from the IAM user created above, setting your default region (eg. `us-east-1`) and the default output format to `text`
 
 ```

@@ -1,0 +1,56 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "User with access to Route53 Hosted Zone",
+
+  "Parameters": {
+    "hostedZoneId": {
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+  },
+
+  "Conditions": {
+  },
+
+  "Resources": {
+
+    "user": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "route53UpdateRecordSets",
+          "PolicyDocument": {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect": "Allow",
+              "Action": "route53:ChangeResourceRecordSets",
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:route53:::hostedzone/", { "Ref": "hostedZoneId" } ] ] }
+            }]
+          }
+        }]
+      }
+    },
+
+    "accessKey": {
+      "Type": "AWS::IAM::AccessKey",
+      "Properties": {
+        "Status": "Active",
+        "UserName": { "Ref": "user" }
+      }
+    }
+
+  },
+
+  "Outputs": {
+    "accessKeyId": {
+      "Value": { "Ref": "accessKey" }
+    },
+    "secretAccessKey": {
+      "Value": { "Fn::GetAtt": [ "accessKey", "SecretAccessKey" ] }
+    }
+  }
+}
