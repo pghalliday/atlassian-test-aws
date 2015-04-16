@@ -28,7 +28,13 @@
     "proxyPort": {
       "Type": "Number"
     },
+    "proxySshSubDomain": {
+      "Type": "String"
+    },
     "crowdSubDomain": {
+      "Type": "String"
+    },
+    "crowdSshSubDomain": {
       "Type": "String"
     },
     "crowdPort": {
@@ -40,6 +46,9 @@
     "jiraSubDomain": {
       "Type": "String"
     },
+    "jiraSshSubDomain": {
+      "Type": "String"
+    },
     "jiraPort": {
       "Type": "Number"
     },
@@ -49,6 +58,9 @@
     "confluenceSubDomain": {
       "Type": "String"
     },
+    "confluenceSshSubDomain": {
+      "Type": "String"
+    },
     "confluencePort": {
       "Type": "Number"
     },
@@ -56,6 +68,9 @@
       "Type": "Number"
     },
     "stashSubDomain": {
+      "Type": "String"
+    },
+    "stashSshSubDomain": {
       "Type": "String"
     },
     "stashPort": {
@@ -68,6 +83,9 @@
       "Type": "Number"
     },
     "bambooSubDomain": {
+      "Type": "String"
+    },
+    "bambooSshSubDomain": {
       "Type": "String"
     },
     "bambooPort": {
@@ -91,7 +109,7 @@
     "route53SecretAccessKey": {
       "Type": "String"
     },
-    "dbEndpointAddress": {
+    "dbSubDomain": {
       "Type": "String"
     },
     "dbEndpointPort": {
@@ -145,7 +163,7 @@
               "hosted_zone_id": { "Ref": "hostedZoneId" }
             },
             "database": {
-              "address": { "Ref": "dbEndpointAddress" },
+              "address": { "Fn::Join": [ "", [ { "Ref": "dbSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "dbEndpointPort" },
               "username": { "Ref": "dbUsername" },
               "password": { "Ref": "dbPassword" }
@@ -155,30 +173,36 @@
               "password": { "Ref": "gmailPassword" }
             },
             "proxy_port": { "Ref": "proxyPort" },
+            "proxy_ssh_host": { "Fn::Join": [ "", [ { "Ref": "proxySshSubDomain" }, ".", { "Ref": "domain" } ] ] },
             "domain": { "Ref": "domain" },
             "crowd": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "crowdSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "ssh_host": { "Fn::Join": [ "", [ { "Ref": "crowdSshSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "crowdPort" },
               "redirect_port": { "Ref": "crowdRedirectPort" }
             },
             "jira": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "jiraSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "ssh_host": { "Fn::Join": [ "", [ { "Ref": "jiraSshSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "jiraPort" },
               "redirect_port": { "Ref": "jiraRedirectPort" }
             },
             "confluence": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "confluenceSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "ssh_host": { "Fn::Join": [ "", [ { "Ref": "confluenceSshSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "confluencePort" },
               "redirect_port": { "Ref": "confluenceRedirectPort" }
             },
             "stash": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "stashSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "ssh_host": { "Fn::Join": [ "", [ { "Ref": "stashSshSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "stashPort" },
               "ssh_port": { "Ref": "stashSshPort" },
               "redirect_port": { "Ref": "stashRedirectPort" }
             },
             "bamboo": {
               "proxy_host": { "Fn::Join": [ "", [ { "Ref": "bambooSubDomain" }, ".", { "Ref": "domain" } ] ] },
+              "ssh_host": { "Fn::Join": [ "", [ { "Ref": "bambooSshSubDomain" }, ".", { "Ref": "domain" } ] ] },
               "port": { "Ref": "bambooPort" },
               "redirect_port": { "Ref": "bambooRedirectPort" }
             }

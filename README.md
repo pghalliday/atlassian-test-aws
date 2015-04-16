@@ -3,6 +3,7 @@
 ## Prerequisites
 
 - [AWS CLI tools](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+- [ChefDK](https://downloads.chef.io/chef-dk/)
 - Create an S3 bucket to hold the template and cookbooks - `$AT_BUCKET_NAME`
 - Create an S3 bucket to hold  base and home folder backups for the services- `$AT_BACKUP_BUCKET_NAME`
 - Create an EC2 key pair to associate with instances - `$AT_KEY_PAIR`

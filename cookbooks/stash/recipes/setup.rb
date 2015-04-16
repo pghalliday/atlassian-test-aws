@@ -1,12 +1,14 @@
 atlassian_home = '/var/atlassian/application-data'
 stash_user = 'stash'
 stash_group = 'stash'
-stash_checksum = 'a217e71fed08113fadf8402f5bd9a0ce3257042bc2cbeb35af8276fff31498ac'
+stash_checksum =
+  'a217e71fed08113fadf8402f5bd9a0ce3257042bc2cbeb35af8276fff31498ac'
 stash_basename = 'atlassian-stash-3.7.1'
 stash_install_dir = '/opt/atlassian/stash'
 stash_home = ::File.join(atlassian_home, 'stash')
 stash_tarball = "#{stash_basename}.tar.gz"
-stash_url = "https://www.atlassian.com/software/stash/downloads/binary/#{stash_tarball}"
+stash_url =
+  "https://www.atlassian.com/software/stash/downloads/binary/#{stash_tarball}"
 
 stash_database = 'stash'
 stash_database_user = 'stash'
@@ -116,10 +118,12 @@ template '/etc/init/stash.conf' do
   notifies :restart, 'service[stash]', :delayed
 end
 
+include_recipe 'stash::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[stash]', :immediately
   notifies :enable, 'backup_database[stash]', :immediately
   notifies :enable, 'service[stash]', :immediately
   notifies :start, 'service[stash]', :immediately
+  notifies :upsert, 'aws_cli_route53_record_sets[stash]', :immediately
 end

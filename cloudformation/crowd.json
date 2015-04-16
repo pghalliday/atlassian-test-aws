@@ -40,7 +40,7 @@
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",

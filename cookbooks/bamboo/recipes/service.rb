@@ -3,4 +3,3 @@ service 'bamboo' do
   supports restart: true, reload: true, status: true
   action :nothing
 end
-

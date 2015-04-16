@@ -1,9 +1,7 @@
 layer = node['opsworks']['layers']['reverse-proxy']
 if layer
   instance = layer['instances'].first
-  if instance
-    ip = instance[1]['private_ip']
-  end
+  ip = instance[1]['private_ip'] if instance
 end
 if ip
   crowd_database = 'crowd'

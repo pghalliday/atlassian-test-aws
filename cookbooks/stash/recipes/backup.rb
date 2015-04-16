@@ -1,4 +1,4 @@
-include_recipe "backup::default"
+include_recipe 'backup::default'
 
 atlassian_home = '/var/atlassian/application-data'
 stash_user = 'stash'

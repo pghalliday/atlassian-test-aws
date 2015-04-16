@@ -2,9 +2,11 @@
 
 BUCKET_NAME=$1
 TEMPLATES_DIR=$2
-BUILD_DIR=$3
+COOKBOOKS_DIR=$3
+BUILD_DIR=$4
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+$DIR/validate-cookbooks.sh $COOKBOOKS_DIR
 $DIR/validate-templates.sh $TEMPLATES_DIR
 
 rm -rf $BUILD_DIR

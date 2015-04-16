@@ -1,4 +1,4 @@
-include_recipe 'reverse-proxy::service'
+include_recipe 'reverse_proxy::service'
 include_recipe 'iptables::default'
 
 ips = {}
@@ -14,9 +14,7 @@ ips = {}
   layer = node['opsworks']['layers'][service]
   if layer
     instance = layer['instances'].first
-    if instance
-      ips[service] = instance[1]['private_ip']
-    end
+    ips[service] = instance[1]['private_ip'] if instance
   end
   if ips[service]
     template "/etc/nginx/sites-available/#{service}" do

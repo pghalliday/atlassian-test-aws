@@ -19,6 +19,10 @@
     "keyName": {
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
+    "dbSubDomain": {
+      "Type": "String",
+      "Default": "db"
+    },
     "dbUsername": {
       "Type": "String"
     },
@@ -41,13 +45,17 @@
       "Type": "Number",
       "Default": "80"
     },
-    "stashSshPort": {
-      "Type": "Number",
-      "Default": "7999"
+    "proxySshSubDomain": {
+      "Type": "String",
+      "Default": "proxy-ssh"
     },
     "crowdSubDomain": {
       "Type": "String",
       "Default": "crowd"
+    },
+    "crowdSshSubDomain": {
+      "Type": "String",
+      "Default": "crowd-ssh"
     },
     "crowdPort": {
       "Type": "Number",
@@ -61,6 +69,10 @@
       "Type": "String",
       "Default": "jira"
     },
+    "jiraSshSubDomain": {
+      "Type": "String",
+      "Default": "jira-ssh"
+    },
     "jiraPort": {
       "Type": "Number",
       "Default": "8080"
@@ -72,6 +84,10 @@
     "confluenceSubDomain": {
       "Type": "String",
       "Default": "confluence"
+    },
+    "confluenceSshSubDomain": {
+      "Type": "String",
+      "Default": "confluence-ssh"
     },
     "confluencePort": {
       "Type": "Number",
@@ -85,9 +101,17 @@
       "Type": "String",
       "Default": "stash"
     },
+    "stashSshSubDomain": {
+      "Type": "String",
+      "Default": "stash-ssh"
+    },
     "stashPort": {
       "Type": "Number",
       "Default": "7990"
+    },
+    "stashSshPort": {
+      "Type": "Number",
+      "Default": "7999"
     },
     "stashRedirectPort": {
       "Type": "Number",
@@ -96,6 +120,10 @@
     "bambooSubDomain": {
       "Type": "String",
       "Default": "bamboo"
+    },
+    "bambooSshSubDomain": {
+      "Type": "String",
+      "Default": "bamboo-ssh"
     },
     "bambooPort": {
       "Type": "Number",
@@ -118,7 +146,7 @@
     "vpc": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/vpc.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/vpc.json" ] ] },
         "Parameters": {
           "cidrBlock": "10.0.0.0/16",
           "subnet1CidrBlock": "10.0.0.0/24",
@@ -132,11 +160,13 @@
     "rds": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/rds.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/rds.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "subnet1Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "subnet2Id": { "Fn::GetAtt": [ "vpc", "Outputs.subnet2Id" ] },
+          "dbSubDomain": { "Ref": "dbSubDomain" },
+          "domain": { "Ref": "domain" },
           "username": { "Ref": "dbUsername" },
           "password": { "Ref": "dbPassword" }
         }
@@ -146,7 +176,7 @@
     "s3User": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/s3-user.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/s3User.json" ] ] },
         "Parameters": {
           "bucketName": { "Ref": "bucketName" },
           "backupBucketName": { "Ref": "backupBucketName" }
@@ -157,7 +187,7 @@
     "route53User": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/route53-user.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/route53User.json" ] ] },
         "Parameters": {
           "hostedZoneId": { "Ref": "hostedZoneId" }
         }
@@ -167,7 +197,7 @@
     "stack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/stack.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/stack.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "bucketName": { "Ref": "bucketName" },
@@ -177,23 +207,29 @@
           "subnetId": { "Fn::GetAtt": [ "vpc", "Outputs.subnet1Id" ] },
           "domain": { "Ref": "domain" },
           "proxyPort": { "Ref": "proxyPort" },
+          "proxySshSubDomain": { "Ref": "proxySshSubDomain" },
           "crowdSubDomain" : { "Ref": "crowdSubDomain" },
+          "crowdSshSubDomain" : { "Ref": "crowdSshSubDomain" },
           "crowdPort": { "Ref": "crowdPort" },
           "crowdRedirectPort": { "Ref": "crowdRedirectPort" },
           "jiraSubDomain" : { "Ref": "jiraSubDomain" },
+          "jiraSshSubDomain" : { "Ref": "jiraSshSubDomain" },
           "jiraPort": { "Ref": "jiraPort" },
           "jiraRedirectPort": { "Ref": "jiraRedirectPort" },
           "confluenceSubDomain" : { "Ref": "confluenceSubDomain" },
+          "confluenceSshSubDomain" : { "Ref": "confluenceSshSubDomain" },
           "confluencePort": { "Ref": "confluencePort" },
           "confluenceRedirectPort": { "Ref": "confluenceRedirectPort" },
           "stashSubDomain" : { "Ref": "stashSubDomain" },
+          "stashSshSubDomain" : { "Ref": "stashSshSubDomain" },
           "stashPort": { "Ref": "stashPort" },
           "stashSshPort": { "Ref": "stashSshPort" },
           "stashRedirectPort": { "Ref": "stashRedirectPort" },
           "bambooSubDomain" : { "Ref": "bambooSubDomain" },
+          "bambooSshSubDomain" : { "Ref": "bambooSshSubDomain" },
           "bambooPort": { "Ref": "bambooPort" },
           "bambooRedirectPort": { "Ref": "bambooRedirectPort" },
-          "dbEndpointAddress": { "Fn::GetAtt": [ "rds", "Outputs.endpointAddress" ] },
+          "dbSubDomain": { "Ref": "dbSubDomain" },
           "dbEndpointPort": { "Fn::GetAtt": [ "rds", "Outputs.endpointPort" ] },
           "dbUsername": { "Ref": "dbUsername" },
           "dbPassword": { "Ref": "dbPassword" },
@@ -211,7 +247,7 @@
     "crowd": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/crowd.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/crowd.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
@@ -222,7 +258,7 @@
     "jira": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/jira.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/jira.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
@@ -233,7 +269,7 @@
     "confluence": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/confluence.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/confluence.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
@@ -244,7 +280,7 @@
     "stash": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/stash.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/stash.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
@@ -255,7 +291,7 @@
     "bamboo": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/bamboo.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/bamboo.json" ] ] },
         "Parameters": {
           "dbSecurityGroup": { "Fn::GetAtt": [ "rds", "Outputs.usersSecurityGroup" ] },
           "stackId": { "Fn::GetAtt": [ "stack", "Outputs.stackId" ] }
@@ -266,7 +302,7 @@
     "reverseProxy": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/templates/reverse-proxy.json" ] ] },
+        "TemplateURL": { "Fn::Join": [ "", [ "https://s3.amazonaws.com/", { "Ref": "bucketName" }, "/cloudformation/reverseProxy.json" ] ] },
         "Parameters": {
           "vpcId": { "Fn::GetAtt": [ "vpc", "Outputs.vpcId" ] },
           "proxyPort": { "Ref": "proxyPort" },

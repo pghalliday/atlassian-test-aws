@@ -1,12 +1,14 @@
 atlassian_home = '/var/atlassian/application-data'
 jira_user = 'jira'
 jira_group = 'jira'
-jira_checksum = 'c979f112069594ab743c35193d915b42b8a5423e2a934b6adb0548d4556bbb99'
+jira_checksum =
+  'c979f112069594ab743c35193d915b42b8a5423e2a934b6adb0548d4556bbb99'
 jira_basename = 'atlassian-jira-6.4'
 jira_install_dir = '/opt/atlassian/jira'
 jira_home = ::File.join(atlassian_home, 'jira')
 jira_tarball = "#{jira_basename}.tar.gz"
-jira_url = "https://www.atlassian.com/software/jira/downloads/binary/#{jira_tarball}"
+jira_url =
+  "https://www.atlassian.com/software/jira/downloads/binary/#{jira_tarball}"
 
 jira_database = 'jira'
 jira_database_user = 'jira'
@@ -89,12 +91,14 @@ template ::File.join(jira_install_dir, 'current/conf/server.xml') do
   notifies :restart, 'service[jira]', :delayed
 end
 
-template ::File.join(jira_install_dir, 'current/atlassian-jira/WEB-INF/classes/seraph-config.xml') do
+seraph_config = 'current/atlassian-jira/WEB-INF/classes/seraph-config.xml'
+template ::File.join(jira_install_dir, seraph_config) do
   source 'seraph-config.xml.erb'
   notifies :restart, 'service[jira]', :delayed
 end
 
-template ::File.join(jira_install_dir, 'current/atlassian-jira/WEB-INF/classes/crowd.properties') do
+crowd_props = 'current/atlassian-jira/WEB-INF/classes/crowd.properties'
+template ::File.join(jira_install_dir, crowd_props) do
   source 'crowd.properties.erb'
   variables(
     crowd_application_name: jira_crowd_application_name,
@@ -136,10 +140,12 @@ template '/etc/init/jira.conf' do
   notifies :restart, 'service[jira]', :delayed
 end
 
+include_recipe 'jira::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[jira]', :immediately
   notifies :enable, 'backup_database[jira]', :immediately
   notifies :enable, 'service[jira]', :immediately
   notifies :start, 'service[jira]', :immediately
+  notifies :upsert, 'aws_cli_route53_record_sets[jira]', :immediately
 end

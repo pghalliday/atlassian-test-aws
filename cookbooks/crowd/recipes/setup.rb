@@ -1,12 +1,14 @@
 atlassian_home = '/var/atlassian/application-data'
 crowd_user = 'crowd'
 crowd_group = 'crowd'
-crowd_checksum = 'c857eb16f65ed99ab8b289fe671e3cea89140d42f85639304caa91a3ba9ade05'
+crowd_checksum =
+  'c857eb16f65ed99ab8b289fe671e3cea89140d42f85639304caa91a3ba9ade05'
 crowd_basename = 'atlassian-crowd-2.8.0'
 crowd_install_dir = '/opt/atlassian/crowd'
 crowd_home = ::File.join(atlassian_home, 'crowd')
 crowd_tarball = "#{crowd_basename}.tar.gz"
-crowd_url = "https://www.atlassian.com/software/crowd/downloads/binary/#{crowd_tarball}"
+crowd_url =
+  "https://www.atlassian.com/software/crowd/downloads/binary/#{crowd_tarball}"
 
 crowd_database = 'crowd'
 crowd_database_user = 'crowd'
@@ -78,27 +80,32 @@ bash 'install crowd' do
   touch -a current/atlassian-crowd-openid-server.log
   mkdir current/database
   chown -R #{crowd_user}:#{crowd_group} current/database
-  chown -R #{crowd_user}:#{crowd_group} current/atlassian-crowd-openid-server.log
+  chown -R #{crowd_user}:#{crowd_group} \
+    current/atlassian-crowd-openid-server.log
   EOH
   cwd crowd_install_dir
   action :nothing
 end
 
-template ::File.join(crowd_install_dir, 'current/crowd-openidserver-webapp/WEB-INF/classes/crowd.properties') do
+crowd_props =
+  'current/crowd-openidserver-webapp/WEB-INF/classes/crowd.properties'
+template ::File.join(crowd_install_dir, crowd_props) do
   source 'crowd.properties.erb'
   variables(
     port: crowd_port
   )
 end
 
-template ::File.join(crowd_install_dir, 'current/crowd-webapp/WEB-INF/classes/crowd-init.properties') do
+init_props = 'current/crowd-webapp/WEB-INF/classes/crowd-init.properties'
+template ::File.join(crowd_install_dir, init_props) do
   source 'crowd-init.properties.erb'
   variables(
     home: crowd_home
   )
 end
 
-template ::File.join(crowd_install_dir, 'current/apache-tomcat/conf/server.xml') do
+server_xml = 'current/apache-tomcat/conf/server.xml'
+template ::File.join(crowd_install_dir, server_xml) do
   source 'crowd-server.xml.erb'
   variables(
     port: crowd_port,
@@ -108,7 +115,8 @@ template ::File.join(crowd_install_dir, 'current/apache-tomcat/conf/server.xml')
   )
 end
 
-template ::File.join(crowd_install_dir, 'current/apache-tomcat/conf/Catalina/localhost/openidserver.xml') do
+openid_xml = 'current/apache-tomcat/conf/Catalina/localhost/openidserver.xml'
+template ::File.join(crowd_install_dir, openid_xml) do
   source 'crowdid-postgres-openidserver.xml.erb'
   variables(
     username: crowdid_database_user,
@@ -119,11 +127,13 @@ template ::File.join(crowd_install_dir, 'current/apache-tomcat/conf/Catalina/loc
   )
 end
 
-template ::File.join(crowd_install_dir, 'current/crowd-openidserver-webapp/WEB-INF/classes/jdbc.properties') do
+jdbc_props = 'current/crowd-openidserver-webapp/WEB-INF/classes/jdbc.properties'
+template ::File.join(crowd_install_dir, jdbc_props) do
   source 'crowdid-postgres-jdbc.properties.erb'
 end
 
-template ::File.join(crowd_install_dir, 'current/apache-tomcat/conf/Catalina/localhost/crowd.xml') do
+crowd_xml = 'current/apache-tomcat/conf/Catalina/localhost/crowd.xml'
+template ::File.join(crowd_install_dir, crowd_xml) do
   source 'crowd.xml.erb'
   variables(
     username: crowd_gmail_user,
@@ -179,6 +189,7 @@ template '/etc/init/crowd.conf' do
   )
 end
 
+include_recipe 'crowd::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[crowd]', :immediately
@@ -186,4 +197,5 @@ bash 'noop' do
   notifies :enable, 'backup_database[crowdid]', :immediately
   notifies :enable, 'service[crowd]', :immediately
   notifies :start, 'service[crowd]', :immediately
+  notifies :upsert, 'aws_cli_route53_record_sets[crowd]', :immediately
 end

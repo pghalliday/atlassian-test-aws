@@ -3,4 +3,3 @@ service 'jira' do
   supports restart: true, reload: true, status: true
   action :nothing
 end
-

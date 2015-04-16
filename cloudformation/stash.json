@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "Confluence instance",
+  "Description": "Stash instance",
 
   "Parameters": {
     "stackId": {
@@ -26,20 +26,20 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "confluence::setup" ],
-          "Shutdown": [ "confluence::shutdown" ]
+          "Setup": [ "stash::setup" ],
+          "Shutdown": [ "stash::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "confluence",
-        "Shortname": "confluence",
+        "Name": "stash",
+        "Shortname": "stash",
         "StackId": { "Ref": "stackId" },
         "Type": "custom",
         "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",

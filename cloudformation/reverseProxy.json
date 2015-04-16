@@ -51,8 +51,9 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "reverse-proxy::setup" ],
-          "Configure": [ "reverse-proxy::configure" ]
+          "Setup": [ "reverse_proxy::setup" ],
+          "Shutdown": [ "reverse_proxy::shutdown" ],
+          "Configure": [ "reverse_proxy::configure" ]
         },
         "CustomSecurityGroupIds": [ { "Ref": "securityGroup" } ],
         "EnableAutoHealing": true,
@@ -64,7 +65,7 @@
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.micro",

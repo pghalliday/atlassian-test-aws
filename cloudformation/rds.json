@@ -13,6 +13,12 @@
     "subnet2Id": {
       "Type": "AWS::EC2::Subnet::Id"
     },
+    "dbSubDomain": {
+      "Type": "String"
+    },
+    "domain": {
+      "Type": "String"
+    },
     "username": {
       "Type": "String"
     },
@@ -77,6 +83,19 @@
         "StorageType": "io1",
         "VPCSecurityGroups": [ { "Ref": "securityGroup" } ]
       }
+    },
+
+    "recordSetGroup": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneName": { "Fn::Join": [ "", [ { "Ref": "domain" }, "." ] ] },
+        "RecordSets": [{
+          "Name": { "Fn::Join": [ "", [ { "Ref": "dbSubDomain" }, ".", { "Ref": "domain" }, "." ] ] },
+          "Type": "CNAME",
+          "TTL": "900",
+          "ResourceRecords": [ { "Fn::GetAtt": [ "dbInstance", "Endpoint.Address" ] } ]
+        }]
+      }
     }
 
   },
@@ -84,9 +103,6 @@
   "Outputs": {
     "usersSecurityGroup": {
       "Value": { "Ref": "usersSecurityGroup" }
-    },
-    "endpointAddress": {
-      "Value": { "Fn::GetAtt": [ "dbInstance", "Endpoint.Address" ] }
     },
     "endpointPort": {
       "Value": { "Fn::GetAtt": [ "dbInstance", "Endpoint.Port" ] }

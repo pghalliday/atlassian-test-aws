@@ -3,4 +3,3 @@ service 'confluence' do
   supports restart: true, reload: true, status: true
   action :nothing
 end
-

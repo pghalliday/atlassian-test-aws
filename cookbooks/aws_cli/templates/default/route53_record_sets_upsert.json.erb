@@ -1,0 +1,18 @@
+{
+  "Changes": [
+  <% @hosts.each_index do |index| %>
+    <%= index == 0 ? '' : ',' %>
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "<%= @hosts[index] %>.",
+        "Type": "A",
+        "TTL": 900,
+        "ResourceRecords": [{
+          "Value": "<%= @ip %>"
+        }]
+      }
+    }
+  <% end %>
+  ]
+}

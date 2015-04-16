@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "JIRA instance",
+  "Description": "Confluence instance",
 
   "Parameters": {
     "stackId": {
@@ -26,20 +26,20 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "jira::setup" ],
-          "Shutdown": [ "jira::shutdown" ]
+          "Setup": [ "confluence::setup" ],
+          "Shutdown": [ "confluence::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "jira",
-        "Shortname": "jira",
+        "Name": "confluence",
+        "Shortname": "confluence",
         "StackId": { "Ref": "stackId" },
         "Type": "custom",
         "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",

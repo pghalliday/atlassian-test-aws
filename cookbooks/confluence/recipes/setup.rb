@@ -1,12 +1,16 @@
 atlassian_home = '/var/atlassian/application-data'
 confluence_user = 'confluence'
 confluence_group = 'confluence'
+# rubocop:disable Metrics/LineLength
 confluence_checksum = '17eae4db5f08e7829f465aa6a98d7bcfe30d335afc97c52f57472c91bbe88da8'
+# rubocop:enable Metrics/LineLength
 confluence_basename = 'atlassian-confluence-5.7.1'
 confluence_install_dir = '/opt/atlassian/confluence'
 confluence_home = ::File.join(atlassian_home, 'confluence')
 confluence_tarball = "#{confluence_basename}.tar.gz"
+# rubocop:disable Metrics/LineLength
 confluence_url = "https://www.atlassian.com/software/confluence/downloads/binary/#{confluence_tarball}"
+# rubocop:enable Metrics/LineLength
 
 confluence_database = 'confluence'
 confluence_database_user = 'confluence'
@@ -73,7 +77,8 @@ bash 'install confluence' do
   notifies :restart, 'service[confluence]', :delayed
 end
 
-template ::File.join(confluence_install_dir, 'current/confluence/WEB-INF/classes/confluence-init.properties') do
+init_props = 'current/confluence/WEB-INF/classes/confluence-init.properties'
+template ::File.join(confluence_install_dir, init_props) do
   source 'confluence-init.properties.erb'
   variables(
     home: confluence_home
@@ -122,10 +127,12 @@ template '/etc/init/confluence.conf' do
   notifies :restart, 'service[confluence]', :delayed
 end
 
+include_recipe 'confluence::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_database[confluence]', :immediately
   notifies :enable, 'backup_home[confluence]', :immediately
   notifies :enable, 'service[confluence]', :immediately
   notifies :start, 'service[confluence]', :immediately
+  notifies :upsert, 'aws_cli_route53_record_sets[confluence]', :immediately
 end

@@ -15,13 +15,13 @@ else
   fi
 
   source $DIR/parameters.sh
-  $DIR/scripts/sync-s3.sh $AT_BUCKET_NAME $DIR/templates $DIR/build
+  $DIR/scripts/sync-s3.sh $AT_BUCKET_NAME $DIR/cloudformation $DIR/cookbooks $DIR/build
 
   aws cloudformation $COMMAND \
   --profile atlassian-test \
   --stack-name atlassian-test \
   --capabilities CAPABILITY_IAM \
-  --template-url https://s3.amazonaws.com/$AT_BUCKET_NAME/templates/all.json \
+  --template-url https://s3.amazonaws.com/$AT_BUCKET_NAME/cloudformation/all.json \
   --parameters '[{
     "ParameterKey": "keyName",
     "ParameterValue": "'$AT_KEY_PAIR'",

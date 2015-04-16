@@ -16,25 +16,39 @@ def s3_home_tarball_path
   "#{s3_path}/#{s3_home_tarball_file}"
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def commands
   s3_access_key_id = new_resource.s3_access_key_id
   s3_secret_access_key = new_resource.s3_secret_access_key
   home = new_resource.home
 
   home_tarball_command = "tar cvf - #{home} | gzip -9c"
-  aws_upload_home_command = "AWS_ACCESS_KEY_ID=#{s3_access_key_id} AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key} aws s3 cp - #{s3_home_tarball_path}"
+  aws_upload_home_command = [
+    "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",
+    "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
+    "aws s3 cp - #{s3_home_tarball_path}"
+  ].join(' ')
 
-  aws_download_home_command = "AWS_ACCESS_KEY_ID=#{s3_access_key_id} AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key} aws s3 cp #{s3_home_tarball_path} -"
+  aws_download_home_command = [
+    "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",
+    "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
+    "aws s3 cp #{s3_home_tarball_path} -"
+  ].join(' ')
   home_extract_command = "tar zxf -C #{home} --strip-components=1 -"
 
-  aws_list_command = "AWS_ACCESS_KEY_ID=#{s3_access_key_id} AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key} aws s3 ls #{s3_path}"
+  aws_list_command = [
+    "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",
+    "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
+    "aws s3 ls #{s3_path}"
+  ].join(' ')
 
   cmds = {}
   cmds['backup'] = "#{home_tarball_command} | #{aws_upload_home_command}"
   cmds['restore'] = "#{aws_download_home_command} | #{home_extract_command}"
   cmds['list'] = aws_list_command
-  return cmds
+  cmds
 end
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 action :enable do
   cron "backup to #{s3_home_tarball_path}" do
@@ -54,7 +68,7 @@ end
 
 action :restore do
   list_command = Mixlib::ShellOut.new(commands['list'])
-  list_command.run_command()
+  list_command.run_command
   backup_files = list_command.stdout
   bash "restore from #{s3_home_tarball_path}" do
     user new_resource.user

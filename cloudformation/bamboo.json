@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "Stash instance",
+  "Description": "Bamboo instance",
 
   "Parameters": {
     "stackId": {
@@ -26,20 +26,20 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "stash::setup" ],
-          "Shutdown": [ "stash::shutdown" ]
+          "Setup": [ "bamboo::setup" ],
+          "Shutdown": [ "bamboo::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "stash",
-        "Shortname": "stash",
+        "Name": "bamboo",
+        "Shortname": "bamboo",
         "StackId": { "Ref": "stackId" },
         "Type": "custom",
         "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",

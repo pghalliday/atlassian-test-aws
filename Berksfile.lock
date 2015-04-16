@@ -1,6 +1,6 @@
 DEPENDENCIES
-  aws-cli
-    path: cookbooks/aws-cli
+  aws_cli
+    path: cookbooks/aws_cli
   backup
     path: cookbooks/backup
   bamboo
@@ -11,27 +11,30 @@ DEPENDENCIES
     path: cookbooks/crowd
   jira
     path: cookbooks/jira
-  reverse-proxy
-    path: cookbooks/reverse-proxy
+  reverse_proxy
+    path: cookbooks/reverse_proxy
   stash
     path: cookbooks/stash
 
 GRAPH
   apt (2.7.0)
-  aws-cli (0.1.0)
+  aws_cli (0.1.0)
   backup (0.1.0)
-    aws-cli (>= 0.0.0)
+    aws_cli (>= 0.0.0)
   bamboo (0.1.0)
+    aws_cli (>= 0.0.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
     java (>= 0.0.0)
-  build-essential (2.2.2)
+  build-essential (2.2.3)
   chef-sugar (3.1.0)
   confluence (0.1.0)
+    aws_cli (>= 0.0.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
     java (>= 0.0.0)
   crowd (0.1.0)
+    aws_cli (>= 0.0.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
     java (>= 0.0.0)
@@ -40,6 +43,7 @@ GRAPH
   iptables (1.0.0)
   java (1.31.0)
   jira (0.1.0)
+    aws_cli (>= 0.0.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
     java (>= 0.0.0)
@@ -49,11 +53,12 @@ GRAPH
     apt (>= 1.9.0)
     build-essential (>= 0.0.0)
     openssl (~> 4.0.0)
-  reverse-proxy (0.1.0)
+  reverse_proxy (0.1.0)
     apt (>= 0.0.0)
-    aws-cli (>= 0.0.0)
+    aws_cli (>= 0.0.0)
     iptables (>= 0.0.0)
   stash (0.1.0)
+    aws_cli (>= 0.0.0)
     backup (>= 0.0.0)
     database (>= 0.0.0)
     java (>= 0.0.0)

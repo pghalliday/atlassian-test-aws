@@ -1,4 +1,4 @@
-include_recipe "backup::default"
+include_recipe 'backup::default'
 
 atlassian_home = '/var/atlassian/application-data'
 crowd_user = 'crowd'
@@ -17,7 +17,7 @@ db_host = node['atlassian-test']['database']['address']
 db_port = node['atlassian-test']['database']['port']
 
 backup_database 'crowd' do
-  s3_bucket backup_bucket_name 
+  s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
   db crowd_database
@@ -29,7 +29,7 @@ backup_database 'crowd' do
 end
 
 backup_database 'crowdid' do
-  s3_bucket backup_bucket_name 
+  s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
   db crowdid_database
@@ -43,7 +43,7 @@ end
 backup_home 'crowd' do
   user crowd_user
   home crowd_home
-  s3_bucket backup_bucket_name 
+  s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key
   action :nothing

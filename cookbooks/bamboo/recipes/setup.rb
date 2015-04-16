@@ -1,12 +1,16 @@
 atlassian_home = '/var/atlassian/application-data'
 bamboo_user = 'bamboo'
 bamboo_group = 'bamboo'
+# rubocop:disable Metrics/LineLength
 bamboo_checksum = '88e2463a775fe6078c6ccf5142117384beb0be4d73815ce2146e0f05cde771f5'
+# rubocop:enable Metrics/LineLength
 bamboo_basename = 'atlassian-bamboo-5.8.0'
 bamboo_install_dir = '/opt/atlassian/bamboo'
 bamboo_home = ::File.join(atlassian_home, 'bamboo')
 bamboo_tarball = "#{bamboo_basename}.tar.gz"
+# rubocop:disable Metrics/LineLength
 bamboo_url = "https://www.atlassian.com/software/bamboo/downloads/binary/#{bamboo_tarball}"
+# rubocop:enable Metrics/LineLength
 
 bamboo_database = 'bamboo'
 bamboo_database_user = 'bamboo'
@@ -113,10 +117,12 @@ template '/etc/init/bamboo.conf' do
   notifies :restart, 'service[bamboo]', :delayed
 end
 
+include_recipe 'bamboo::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_database[bamboo]', :immediately
   notifies :enable, 'backup_home[bamboo]', :immediately
   notifies :enable, 'service[bamboo]', :immediately
   notifies :start, 'service[bamboo]', :immediately
+  notifies :upsert, 'aws_cli_route53_record_sets[bamboo]', :immediately
 end

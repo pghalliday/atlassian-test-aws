@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "Bamboo instance",
+  "Description": "JIRA instance",
 
   "Parameters": {
     "stackId": {
@@ -26,20 +26,20 @@
         "AutoAssignElasticIps": false,
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
-          "Setup": [ "bamboo::setup" ],
-          "Shutdown": [ "bamboo::shutdown" ]
+          "Setup": [ "jira::setup" ],
+          "Shutdown": [ "jira::shutdown" ]
         },
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "bamboo",
-        "Shortname": "bamboo",
+        "Name": "jira",
+        "Shortname": "jira",
         "StackId": { "Ref": "stackId" },
         "Type": "custom",
         "CustomSecurityGroupIds": [ { "Ref": "dbSecurityGroup" } ]
       }
     },
 
-    "instance": {
+    "instance2": {
       "Type": "AWS::OpsWorks::Instance",
       "Properties": {
         "InstanceType": "t2.small",
