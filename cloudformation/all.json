@@ -111,7 +111,7 @@
     },
     "stashSshPort": {
       "Type": "Number",
-      "Default": "7999"
+      "Default": "8080"
     },
     "stashRedirectPort": {
       "Type": "Number",
