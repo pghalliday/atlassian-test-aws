@@ -69,6 +69,7 @@ end
 action :restore do
   list_command = Mixlib::ShellOut.new(commands['list'])
   list_command.run_command
+  list_command.error!
   backup_files = list_command.stdout
   bash "restore from #{s3_home_tarball_path}" do
     user new_resource.user

@@ -35,7 +35,10 @@
             }, {
               "Effect": "Allow",
               "Action": "s3:*",
-              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "backupBucketName" }, "/*" ] ] }
+              "Resource": [
+                { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "backupBucketName" }, "/*" ] ] },
+                { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "backupBucketName" } ] ] }
+              ]
             }]
           }
         }]
