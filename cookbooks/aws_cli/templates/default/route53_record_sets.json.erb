@@ -3,13 +3,13 @@
   <% @hosts.each_index do |index| %>
     <%= index == 0 ? '' : ',' %>
     {
-      "Action": "UPSERT",
+      "Action": "<%= @method %>",
       "ResourceRecordSet": {
         "Name": "<%= @hosts[index] %>.",
-        "Type": "A",
+        "Type": "CNAME",
         "TTL": 900,
         "ResourceRecords": [{
-          "Value": "<%= @ip %>"
+          "Value": "<%= @public_dns_name %>"
         }]
       }
     }

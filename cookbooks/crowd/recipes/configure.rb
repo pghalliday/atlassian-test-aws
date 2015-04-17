@@ -1,4 +1,5 @@
-layer = node['opsworks']['layers']['reverse-proxy']
+layers = node['opsworks']['layers']
+layer = layers['reverse_proxy']
 if layer
   instance = layer['instances'].first
   ip = instance[1]['private_ip'] if instance
@@ -27,5 +28,15 @@ if ip
     )
     EOH
     action :query
+  end
+end
+
+first_ip =  layers['crowd']['instances'].first[1]['ip']
+my_ip = node['opsworks']['instance']['ip']
+if my_ip == first_ip
+  include_recipe 'crowd::record_sets'
+  bash 'noop' do
+    command '/bin/true'
+    notifies :upsert, 'aws_cli_route53_record_sets[crowd]', :immediately
   end
 end

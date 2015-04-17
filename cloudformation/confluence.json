@@ -27,6 +27,7 @@
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
           "Setup": [ "confluence::setup" ],
+          "Configure": [ "confluence::configure" ],
           "Shutdown": [ "confluence::shutdown" ]
         },
         "EnableAutoHealing": true,

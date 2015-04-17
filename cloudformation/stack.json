@@ -215,7 +215,6 @@
         "DefaultRootDeviceType": "ebs",
         "DefaultSshKeyName": { "Ref": "keyName" },
         "DefaultSubnetId": { "Ref": "subnetId" },
-        "HostnameTheme": "Baked_Goods",
         "Name": "atlassian-test",
         "UseCustomCookbooks": true,
         "UseOpsworksSecurityGroups": true,

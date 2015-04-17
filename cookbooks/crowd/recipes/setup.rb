@@ -189,7 +189,6 @@ template '/etc/init/crowd.conf' do
   )
 end
 
-include_recipe 'crowd::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[crowd]', :immediately
@@ -197,5 +196,4 @@ bash 'noop' do
   notifies :enable, 'backup_database[crowdid]', :immediately
   notifies :enable, 'service[crowd]', :immediately
   notifies :start, 'service[crowd]', :immediately
-  notifies :upsert, 'aws_cli_route53_record_sets[crowd]', :immediately
 end

@@ -127,12 +127,10 @@ template '/etc/init/confluence.conf' do
   notifies :restart, 'service[confluence]', :delayed
 end
 
-include_recipe 'confluence::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_database[confluence]', :immediately
   notifies :enable, 'backup_home[confluence]', :immediately
   notifies :enable, 'service[confluence]', :immediately
   notifies :start, 'service[confluence]', :immediately
-  notifies :upsert, 'aws_cli_route53_record_sets[confluence]', :immediately
 end

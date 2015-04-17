@@ -3,7 +3,7 @@ aws_cli_route53_record_sets 'bamboo' do
   hosted_zone_id node['atlassian-test']['route53']['hosted_zone_id']
   access_key_id node['atlassian-test']['route53']['access_key_id']
   secret_access_key node['atlassian-test']['route53']['secret_access_key']
-  ip node['opsworks']['instance']['ip']
+  public_dns_name node['opsworks']['instance']['public_dns_name']
   hosts([
     node['atlassian-test']['bamboo']['ssh_host']
   ])

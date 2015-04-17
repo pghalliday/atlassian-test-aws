@@ -58,8 +58,8 @@
         "CustomSecurityGroupIds": [ { "Ref": "securityGroup" } ],
         "EnableAutoHealing": true,
         "InstallUpdatesOnBoot": true,
-        "Name": "reverse-proxy",
-        "Shortname": "reverse-proxy",
+        "Name": "reverse_proxy",
+        "Shortname": "reverse_proxy",
         "StackId": { "Ref": "stackId" },
         "Type": "custom"
       }

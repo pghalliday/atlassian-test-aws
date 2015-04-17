@@ -140,12 +140,10 @@ template '/etc/init/jira.conf' do
   notifies :restart, 'service[jira]', :delayed
 end
 
-include_recipe 'jira::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[jira]', :immediately
   notifies :enable, 'backup_database[jira]', :immediately
   notifies :enable, 'service[jira]', :immediately
   notifies :start, 'service[jira]', :immediately
-  notifies :upsert, 'aws_cli_route53_record_sets[jira]', :immediately
 end

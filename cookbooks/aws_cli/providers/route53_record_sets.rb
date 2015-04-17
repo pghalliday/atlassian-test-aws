@@ -14,7 +14,11 @@ def json_dir
   )
 end
 
-def aws_command(json)
+def json
+  ::File.join(json_dir, 'route53_record_sets.json')
+end
+
+def aws_command
   [
     "AWS_ACCESS_KEY_ID=#{new_resource.access_key_id}",
     "AWS_SECRET_ACCESS_KEY=#{new_resource.secret_access_key}",
@@ -28,17 +32,17 @@ action :upsert do
   directory json_dir do
     recursive true
   end
-  json = ::File.join(json_dir, 'upsert.json')
   template json do
-    source 'route53_record_sets_upsert.json.erb'
+    source 'route53_record_sets.json.erb'
     cookbook 'aws_cli'
     variables(
-      ip: new_resource.ip,
+      method: 'UPSERT',
+      public_dns_name: new_resource.public_dns_name,
       hosts: new_resource.hosts
     )
   end
   bash "route53_record_sets upsert #{new_resource.name}" do
-    code aws_command(json)
+    code aws_command
   end
 end
 
@@ -46,15 +50,16 @@ action :delete do
   directory json_dir do
     recursive true
   end
-  json = ::File.join(json_dir, 'delete.json')
   template json do
-    source 'route53_record_sets_delete.json.erb'
+    source 'route53_record_sets.json.erb'
     cookbook 'aws_cli'
     variables(
+      method: 'DELETE',
+      public_dns_name: new_resource.public_dns_name,
       hosts: new_resource.hosts
     )
   end
   bash "route53_record_sets delete #{new_resource.name}" do
-    code aws_command(json)
+    code aws_command
   end
 end

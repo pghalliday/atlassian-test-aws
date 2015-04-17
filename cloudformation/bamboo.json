@@ -27,6 +27,7 @@
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
           "Setup": [ "bamboo::setup" ],
+          "Configure": [ "bamboo::configure" ],
           "Shutdown": [ "bamboo::shutdown" ]
         },
         "EnableAutoHealing": true,

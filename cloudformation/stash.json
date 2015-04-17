@@ -27,6 +27,7 @@
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
           "Setup": [ "stash::setup" ],
+          "Configure": [ "stash::configure" ],
           "Shutdown": [ "stash::shutdown" ]
         },
         "EnableAutoHealing": true,

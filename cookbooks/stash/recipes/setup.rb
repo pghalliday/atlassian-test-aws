@@ -118,12 +118,10 @@ template '/etc/init/stash.conf' do
   notifies :restart, 'service[stash]', :delayed
 end
 
-include_recipe 'stash::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_home[stash]', :immediately
   notifies :enable, 'backup_database[stash]', :immediately
   notifies :enable, 'service[stash]', :immediately
   notifies :start, 'service[stash]', :immediately
-  notifies :upsert, 'aws_cli_route53_record_sets[stash]', :immediately
 end

@@ -117,12 +117,10 @@ template '/etc/init/bamboo.conf' do
   notifies :restart, 'service[bamboo]', :delayed
 end
 
-include_recipe 'bamboo::record_sets'
 bash 'noop' do
   command '/bin/true'
   notifies :enable, 'backup_database[bamboo]', :immediately
   notifies :enable, 'backup_home[bamboo]', :immediately
   notifies :enable, 'service[bamboo]', :immediately
   notifies :start, 'service[bamboo]', :immediately
-  notifies :upsert, 'aws_cli_route53_record_sets[bamboo]', :immediately
 end

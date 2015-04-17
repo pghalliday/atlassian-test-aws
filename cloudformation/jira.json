@@ -27,6 +27,7 @@
         "AutoAssignPublicIps": true,
         "CustomRecipes": {
           "Setup": [ "jira::setup" ],
+          "Configure": [ "jira::configure" ],
           "Shutdown": [ "jira::shutdown" ]
         },
         "EnableAutoHealing": true,
