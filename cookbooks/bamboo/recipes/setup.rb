@@ -20,14 +20,16 @@ bamboo_port = node['atlassian-test']['bamboo']['port']
 bamboo_redirect_port = node['atlassian-test']['bamboo']['redirect_port']
 bamboo_proxy_port = node['atlassian-test']['proxy_port']
 bamboo_proxy_host = node['atlassian-test']['bamboo']['proxy_host']
-bamboo_db_host = node['atlassian-test']['database']['address']
-bamboo_db_port = node['atlassian-test']['database']['port']
+db_host = node['atlassian-test']['database']['address']
+db_port = node['atlassian-test']['database']['port']
+db_user = node['atlassian-test']['database']['username']
+db_password = node['atlassian-test']['database']['password']
 
 postgresql_connection_info = {
-  host: bamboo_db_host,
-  port: bamboo_db_port,
-  username: node['atlassian-test']['database']['username'],
-  password: node['atlassian-test']['database']['password']
+  host: db_host,
+  port: db_port,
+  username: db_user,
+  password: db_password
 }
 
 include_recipe 'bamboo::service'
@@ -97,13 +99,19 @@ postgresql_database_user bamboo_database_user do
   connection postgresql_connection_info
   password bamboo_database_password
   action :create
+  notifies :run, 'bash[assign bamboo db owner]', :immediately
 end
 
-postgresql_database_user bamboo_database_user do
-  connection postgresql_connection_info
-  database_name bamboo_database
-  privileges [:all]
-  action :grant
+db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{bamboo_database}",
+  "OWNER TO #{bamboo_database_user};' #{bamboo_database}"
+].join(' ')
+
+bash 'assign bamboo db owner' do
+  code db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[bamboo]', :immediately
 end
 

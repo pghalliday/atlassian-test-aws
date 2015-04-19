@@ -34,7 +34,7 @@ def commands
     "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
     "aws s3 cp #{s3_home_tarball_path} -"
   ].join(' ')
-  home_extract_command = "tar zxf -C #{home} --strip-components=1 -"
+  home_extract_command = 'tar zxf - -C /'
 
   aws_list_command = [
     "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",

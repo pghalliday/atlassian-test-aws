@@ -18,14 +18,16 @@ stash_port = node['atlassian-test']['stash']['port']
 stash_redirect_port = node['atlassian-test']['stash']['redirect_port']
 stash_proxy_port = node['atlassian-test']['proxy_port']
 stash_proxy_host = node['atlassian-test']['stash']['proxy_host']
-stash_db_host = node['atlassian-test']['database']['address']
-stash_db_port = node['atlassian-test']['database']['port']
+db_host = node['atlassian-test']['database']['address']
+db_port = node['atlassian-test']['database']['port']
+db_user = node['atlassian-test']['database']['username']
+db_password = node['atlassian-test']['database']['password']
 
 postgresql_connection_info = {
-  host: stash_db_host,
-  port: stash_db_port,
-  username: node['atlassian-test']['database']['username'],
-  password: node['atlassian-test']['database']['password']
+  host: db_host,
+  port: db_port,
+  username: db_user,
+  password: db_password
 }
 
 include_recipe 'stash::service'
@@ -98,13 +100,19 @@ postgresql_database_user stash_database_user do
   connection postgresql_connection_info
   password stash_database_password
   action :create
+  notifies :run, 'bash[assign stash db owner]', :immediately
 end
 
-postgresql_database_user stash_database_user do
-  connection postgresql_connection_info
-  database_name stash_database
-  privileges [:all]
-  action :grant
+db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{stash_database}",
+  "OWNER TO #{stash_database_user};' #{stash_database}"
+].join(' ')
+
+bash 'assign stash db owner' do
+  code db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[stash]', :immediately
 end
 

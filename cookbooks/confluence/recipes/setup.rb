@@ -20,14 +20,16 @@ confluence_port = node['atlassian-test']['confluence']['port']
 confluence_redirect_port = node['atlassian-test']['confluence']['redirect_port']
 confluence_proxy_port = node['atlassian-test']['proxy_port']
 confluence_proxy_host = node['atlassian-test']['confluence']['proxy_host']
-confluence_db_host = node['atlassian-test']['database']['address']
-confluence_db_port = node['atlassian-test']['database']['port']
+db_host = node['atlassian-test']['database']['address']
+db_port = node['atlassian-test']['database']['port']
+db_user = node['atlassian-test']['database']['username']
+db_password = node['atlassian-test']['database']['password']
 
 postgresql_connection_info = {
-  host: confluence_db_host,
-  port: confluence_db_port,
-  username: node['atlassian-test']['database']['username'],
-  password: node['atlassian-test']['database']['password']
+  host: db_host,
+  port: db_port,
+  username: db_user,
+  password: db_password
 }
 
 include_recipe 'confluence::service'
@@ -108,13 +110,19 @@ postgresql_database_user confluence_database_user do
   connection postgresql_connection_info
   password confluence_database_password
   action :create
+  notifies :run, 'bash[assign confluence db owner]', :immediately
 end
 
-postgresql_database_user confluence_database_user do
-  connection postgresql_connection_info
-  database_name confluence_database
-  privileges [:all]
-  action :grant
+db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{confluence_database}",
+  "OWNER TO #{confluence_database_user};' #{confluence_database}"
+].join(' ')
+
+bash 'assign confluence db owner' do
+  code db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[confluence]', :immediately
 end
 

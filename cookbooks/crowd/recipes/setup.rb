@@ -24,14 +24,16 @@ crowd_proxy_port = node['atlassian-test']['proxy_port']
 crowd_proxy_host = node['atlassian-test']['crowd']['proxy_host']
 crowd_gmail_user = node['atlassian-test']['gmail']['username']
 crowd_gmail_password = node['atlassian-test']['gmail']['password']
-crowd_db_host = node['atlassian-test']['database']['address']
-crowd_db_port = node['atlassian-test']['database']['port']
+db_host = node['atlassian-test']['database']['address']
+db_port = node['atlassian-test']['database']['port']
+db_user = node['atlassian-test']['database']['username']
+db_password = node['atlassian-test']['database']['password']
 
 postgresql_connection_info = {
-  host: crowd_db_host,
-  port: crowd_db_port,
-  username: node['atlassian-test']['database']['username'],
-  password: node['atlassian-test']['database']['password']
+  host: db_host,
+  port: db_port,
+  username: db_user,
+  password: db_password
 }
 
 include_recipe 'crowd::service'
@@ -121,8 +123,8 @@ template ::File.join(crowd_install_dir, openid_xml) do
   variables(
     username: crowdid_database_user,
     password: crowdid_database_password,
-    host: crowd_db_host,
-    port: crowd_db_port,
+    host: db_host,
+    port: db_port,
     database: crowdid_database
   )
 end
@@ -152,13 +154,19 @@ postgresql_database_user crowd_database_user do
   connection postgresql_connection_info
   password crowd_database_password
   action :create
+  notifies :run, 'bash[assign crowd db owner]', :immediately
 end
 
-postgresql_database_user crowd_database_user do
-  connection postgresql_connection_info
-  database_name crowd_database
-  privileges [:all]
-  action :grant
+crowd_db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{crowd_database}",
+  "OWNER TO #{crowd_database_user};' #{crowd_database}"
+].join(' ')
+
+bash 'assign crowd db owner' do
+  code crowd_db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[crowd]', :immediately
 end
 
@@ -171,13 +179,19 @@ postgresql_database_user crowdid_database_user do
   connection postgresql_connection_info
   password crowdid_database_password
   action :create
+  notifies :run, 'bash[assign crowdid db owner]', :immediately
 end
 
-postgresql_database_user crowdid_database_user do
-  connection postgresql_connection_info
-  database_name crowdid_database
-  privileges [:all]
-  action :grant
+crowdid_db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{crowdid_database}",
+  "OWNER TO #{crowdid_database_user};' #{crowdid_database}"
+].join(' ')
+
+bash 'assign crowdid db owner' do
+  code crowdid_db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[crowdid]', :immediately
 end
 

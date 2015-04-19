@@ -18,8 +18,10 @@ jira_port = node['atlassian-test']['jira']['port']
 jira_redirect_port = node['atlassian-test']['jira']['redirect_port']
 jira_proxy_port = node['atlassian-test']['proxy_port']
 jira_proxy_host = node['atlassian-test']['jira']['proxy_host']
-jira_db_host = node['atlassian-test']['database']['address']
-jira_db_port = node['atlassian-test']['database']['port']
+db_host = node['atlassian-test']['database']['address']
+db_port = node['atlassian-test']['database']['port']
+db_user = node['atlassian-test']['database']['username']
+db_password = node['atlassian-test']['database']['password']
 
 crowd_proxy_port = node['atlassian-test']['proxy_port']
 crowd_proxy_host = node['atlassian-test']['crowd']['proxy_host']
@@ -29,10 +31,10 @@ jira_crowd_base_url = "http://#{crowd_proxy_host}:#{crowd_proxy_port}/crowd"
 jira_crowd_session_validation_interval = 2
 
 postgresql_connection_info = {
-  host: jira_db_host,
-  port: jira_db_port,
-  username: node['atlassian-test']['database']['username'],
-  password: node['atlassian-test']['database']['password']
+  host: db_host,
+  port: db_port,
+  username: db_user,
+  password: db_password
 }
 
 include_recipe 'jira::service'
@@ -120,13 +122,19 @@ postgresql_database_user jira_database_user do
   connection postgresql_connection_info
   password jira_database_password
   action :create
+  notifies :run, 'bash[assign jira db owner]', :immediately
 end
 
-postgresql_database_user jira_database_user do
-  connection postgresql_connection_info
-  database_name jira_database
-  privileges [:all]
-  action :grant
+db_owner_command = [
+  "PGPASSWORD=#{db_password}",
+  "psql -h #{db_host} -p #{db_port} -U #{db_user} -q -c",
+  "'ALTER DATABASE #{jira_database}",
+  "OWNER TO #{jira_database_user};' #{jira_database}"
+].join(' ')
+
+bash 'assign jira db owner' do
+  code db_owner_command
+  action :nothing
   notifies :restore, 'backup_database[jira]', :immediately
 end
 
