@@ -10,6 +10,8 @@ jira_tarball = "#{jira_basename}.tar.gz"
 jira_url =
   "https://www.atlassian.com/software/jira/downloads/binary/#{jira_tarball}"
 
+jvm_support_recommended_args = '-Datlassian.plugins.enable.wait=300'
+
 jira_database = 'jira'
 jira_database_user = 'jira'
 jira_database_password = 'jira'
@@ -79,6 +81,14 @@ bash 'install jira' do
   EOH
   cwd jira_install_dir
   action :nothing
+  notifies :restart, 'service[jira]', :delayed
+end
+
+template ::File.join(jira_install_dir, 'current/bin/setenv.sh') do
+  source 'setenv.sh.erb'
+  variables(
+    jvm_support_recommended_args: jvm_support_recommended_args
+  )
   notifies :restart, 'service[jira]', :delayed
 end
 
