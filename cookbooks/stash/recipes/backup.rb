@@ -1,8 +1,6 @@
 include_recipe 'backup::default'
 
-atlassian_home = '/var/atlassian/application-data'
 stash_user = 'stash'
-stash_home = ::File.join(atlassian_home, 'stash')
 stash_database = 'stash'
 stash_database_user = 'stash'
 stash_database_password = 'stash'
@@ -27,7 +25,6 @@ end
 
 backup_home 'stash' do
   user stash_user
-  home stash_home
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key

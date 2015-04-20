@@ -43,7 +43,7 @@ def commands
   ].join(' ')
   db_restore_command = [
     "PGPASSWORD=#{db_password}",
-    "pg_restore -h #{db_host} -p #{db_port} -U #{db_user} -d #{db}"
+    "pg_restore -h #{db_host} -p #{db_port} -U #{db_user} -n public -d #{db}"
   ].join(' ')
 
   aws_list_command = [

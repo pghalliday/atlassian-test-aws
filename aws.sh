@@ -11,7 +11,7 @@ else
   COMMAND="update-stack"
   if [ "$1" = "create" ]
   then
-    COMMAND="create-stack"
+    COMMAND="create-stack --on-failure DO_NOTHING"
   fi
 
   source $DIR/parameters.sh

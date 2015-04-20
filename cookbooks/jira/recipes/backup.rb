@@ -1,8 +1,6 @@
 include_recipe 'backup::default'
 
-atlassian_home = '/var/atlassian/application-data'
 jira_user = 'jira'
-jira_home = ::File.join(atlassian_home, 'jira')
 jira_database = 'jira'
 jira_database_user = 'jira'
 jira_database_password = 'jira'
@@ -27,7 +25,6 @@ end
 
 backup_home 'jira' do
   user jira_user
-  home jira_home
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key

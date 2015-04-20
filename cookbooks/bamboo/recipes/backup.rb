@@ -1,8 +1,6 @@
 include_recipe 'backup::default'
 
-atlassian_home = '/var/atlassian/application-data'
 bamboo_user = 'bamboo'
-bamboo_home = ::File.join(atlassian_home, 'bamboo')
 bamboo_database = 'bamboo'
 bamboo_database_user = 'bamboo'
 bamboo_database_password = 'bamboo'
@@ -27,7 +25,6 @@ end
 
 backup_home 'bamboo' do
   user bamboo_user
-  home bamboo_home
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key

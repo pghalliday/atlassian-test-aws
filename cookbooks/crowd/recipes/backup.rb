@@ -1,8 +1,6 @@
 include_recipe 'backup::default'
 
-atlassian_home = '/var/atlassian/application-data'
 crowd_user = 'crowd'
-crowd_home = ::File.join(atlassian_home, 'crowd')
 crowd_database = 'crowd'
 crowd_database_user = 'crowd'
 crowd_database_password = 'crowd'
@@ -42,7 +40,6 @@ end
 
 backup_home 'crowd' do
   user crowd_user
-  home crowd_home
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key

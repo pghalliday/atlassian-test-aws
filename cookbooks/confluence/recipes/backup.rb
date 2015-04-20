@@ -1,8 +1,6 @@
 include_recipe 'backup::default'
 
-atlassian_home = '/var/atlassian/application-data'
 confluence_user = 'confluence'
-confluence_home = ::File.join(atlassian_home, 'confluence')
 confluence_database = 'confluence'
 confluence_database_user = 'confluence'
 confluence_database_password = 'confluence'
@@ -27,7 +25,6 @@ end
 
 backup_home 'confluence' do
   user confluence_user
-  home confluence_home
   s3_bucket backup_bucket_name
   s3_access_key_id s3_access_key_id
   s3_secret_access_key s3_secret_access_key

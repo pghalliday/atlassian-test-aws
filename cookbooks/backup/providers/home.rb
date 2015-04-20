@@ -16,13 +16,20 @@ def s3_home_tarball_path
   "#{s3_path}/#{s3_home_tarball_file}"
 end
 
+def home
+  ::Dir.home(new_resource.user)
+end
+
+def group
+  ::Etc.getpwnam(new_resource.user).gid
+end
+
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def commands
   s3_access_key_id = new_resource.s3_access_key_id
   s3_secret_access_key = new_resource.s3_secret_access_key
-  home = new_resource.home
 
-  home_tarball_command = "tar cvf - #{home} | gzip -9c"
+  home_tarball_command = 'tar cvf - . | gzip -9c'
   aws_upload_home_command = [
     "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",
     "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
@@ -34,7 +41,7 @@ def commands
     "AWS_SECRET_ACCESS_KEY=#{s3_secret_access_key}",
     "aws s3 cp #{s3_home_tarball_path} -"
   ].join(' ')
-  home_extract_command = 'tar zxf - -C /'
+  home_extract_command = 'tar zxf -'
 
   aws_list_command = [
     "AWS_ACCESS_KEY_ID=#{s3_access_key_id}",
@@ -55,13 +62,14 @@ action :enable do
     hour '0'
     minute '0'
     user new_resource.user
-    command commands['backup']
+    command "cd #{home} && commands['backup']"
   end
 end
 
 action :backup do
   bash "backup to #{s3_home_tarball_path}" do
     user new_resource.user
+    cwd home
     code commands['backup']
   end
 end
@@ -73,6 +81,8 @@ action :restore do
   backup_files = list_command.stdout
   bash "restore from #{s3_home_tarball_path}" do
     user new_resource.user
+    group group
+    cwd home
     code commands['restore']
     only_if { !(/ #{s3_home_tarball_file}$/ =~ backup_files).nil? }
   end
