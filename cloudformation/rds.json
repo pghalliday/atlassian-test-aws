@@ -75,12 +75,11 @@
         "DBSubnetGroupName": { "Ref": "dbSubnetGroup" },
         "Engine": "postgres",
         "EngineVersion": "9.3.6",
-        "Iops": "1000",
         "MasterUsername": { "Ref": "username" },
         "MasterUserPassword": { "Ref": "password" },
         "MultiAZ": true,
         "PubliclyAccessible": false,
-        "StorageType": "io1",
+        "StorageType": "gp2",
         "VPCSecurityGroups": [ { "Ref": "securityGroup" } ]
       }
     },
